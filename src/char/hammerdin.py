@@ -56,7 +56,7 @@ class Hammerdin(IChar):
         super().pre_move()
         # in case teleport hotkey is not set or teleport can not be used, use vigor if set
         should_cast_vigor = self._skill_hotkeys["vigor"] and not self._ui_manager.is_right_skill_selected(["VIGOR"])
-        can_teleport = self._skill_hotkeys["teleport"] and self._ui_manager.is_right_skill_active()
+        can_teleport = self._skill_hotkeys["teleport"] and self._ui_manager.is_right_skill_active() and not self._disable_teleport
         if  should_cast_vigor and not can_teleport:
             keyboard.send(self._skill_hotkeys["vigor"])
             wait(0.15, 0.25)
@@ -69,6 +69,7 @@ class Hammerdin(IChar):
 
     def kill_pindle(self) -> bool:
         wait(0.1, 0.15)
+        self._disable_teleport = False
         if self.can_teleport():
             self._pather.traverse_nodes_fixed("pindle_end", self)
         else:
@@ -81,7 +82,7 @@ class Hammerdin(IChar):
         self._cast_hammers(1.6, "redemption")
         return True
 
-    def kill_eldritch(self) -> bool:
+    def kill_eldritch(self) -> bool:        
         if self.can_teleport():
             # Custom eld position for teleport that brings us closer to eld
             self._pather.traverse_nodes_fixed([(675, 30)], self)
@@ -97,6 +98,7 @@ class Hammerdin(IChar):
         return True
 
     def kill_shenk(self):
+        self._disable_teleport = False
         if not self._do_pre_move:
             keyboard.send(self._skill_hotkeys["concentration"])
             wait(0.05, 0.15)
@@ -108,6 +110,7 @@ class Hammerdin(IChar):
         return True
 
     def kill_council(self) -> bool:
+        self._disable_teleport = False
         if not self._do_pre_move:
             keyboard.send(self._skill_hotkeys["concentration"])
             wait(0.05, 0.15)

@@ -52,6 +52,8 @@ class Pindle:
         if do_pre_buff:
             self._char.pre_buff()
         # move to pindle
+        if self._config.char["teleport_item"]:
+            self._char._disable_teleport = True
         if self._char.can_teleport():
             self._pather.traverse_nodes_fixed("pindle_safe_dist", self._char)
         else:
@@ -60,5 +62,5 @@ class Pindle:
         self._char.kill_pindle()
         wait(0.2, 0.3)
         picked_up_items = self._pickit.pick_up_items(self._char)
-        self._game_stats.log_kill_pindle();
+        self._game_stats.log_kill_pindle()
         return (Location.A5_PINDLE_END, picked_up_items)

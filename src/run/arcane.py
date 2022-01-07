@@ -100,7 +100,7 @@ class Arcane:
                 self._chest.open_up_chests()
             picked_up_items |= self._pickit.pick_up_items(self._char)
             if found:
-                self._game_stats.log_kill_arc();
+                self._game_stats.log_kill_arc()
                 return (Location.A2_ARC_END, picked_up_items)
             elif i < len(path_arr) - 1:
                 # Open TP and return back to town, walk to wp and start over

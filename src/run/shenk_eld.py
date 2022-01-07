@@ -48,6 +48,8 @@ class ShenkEld:
             return False
         if do_pre_buff:
             self._char.pre_buff()
+        if self._config.char["teleport_item"]:
+            self._char._disable_teleport = True
         if self._char.can_teleport():
             self._pather.traverse_nodes_fixed("eldritch_safe_dist", self._char)
         else:
@@ -57,7 +59,7 @@ class ShenkEld:
         loc = Location.A5_ELDRITCH_END
         wait(0.2, 0.3)
         picked_up_items = self._pickit.pick_up_items(self._char)
-        game_stats.log_kill_eld();
+        game_stats.log_kill_eld()
 
         # Shenk
         if do_shenk:
@@ -65,12 +67,20 @@ class ShenkEld:
             game_stats.update_location("Shk" if self._config.general['discord_status_condensed'] else "Shenk")
             self._curr_loc = Location.A5_SHENK_START
             # No force move, otherwise we might get stuck at stairs!
-            if not self._pather.traverse_nodes((Location.A5_SHENK_START, Location.A5_SHENK_SAFE_DIST), self._char):
-                return False
+            if self._config.char["teleport_item"]:
+                self._char._disable_teleport = True
+                if not self._pather.traverse_nodes((Location.A5_SHENK_START, Location.A5_SHENK_POTAL), self._char):
+                    return False
+                self._char._disable_teleport = False
+                if not self._pather.traverse_nodes((Location.A5_SHENK_POTAL, Location.A5_SHENK_SAFE_DIST), self._char):
+                    return False
+            else:
+                if not self._pather.traverse_nodes((Location.A5_SHENK_START, Location.A5_SHENK_SAFE_DIST), self._char):
+                    return False
             self._char.kill_shenk()
             loc = Location.A5_SHENK_END
             wait(1.9, 2.4) # sometimes merc needs some more time to kill shenk...
             picked_up_items |= self._pickit.pick_up_items(self._char)
-            game_stats.log_kill_shenk();
+            game_stats.log_kill_shenk()
 
         return (loc, picked_up_items)

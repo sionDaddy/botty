@@ -36,6 +36,7 @@ class Location:
     A5_SHENK_START = "a5_shenk_start"
     A5_SHENK_SAFE_DIST = "a5_shenk_safe_dist"
     A5_SHENK_END = "a5_shenk_end"
+    A5_SHENK_POTAL = "a5_shenk_potal"
     # A4 Town
     A4_TOWN_START = "a4_town_start"
     A4_WP = "a4_town_wp"
@@ -240,6 +241,8 @@ class Pather:
             # Shenk
             (Location.A5_SHENK_START, Location.A5_SHENK_SAFE_DIST): [141, 142, 143, 144, 145, 146, 147, 148],
             (Location.A5_SHENK_SAFE_DIST, Location.A5_SHENK_END): [149],
+            (Location.A5_SHENK_START, Location.A5_SHENK_POTAL): [141, 142, 143, 144],
+            (Location.A5_SHENK_POTAL, Location.A5_SHENK_SAFE_DIST): [145, 146, 147, 148],
             # A4 Town
             (Location.A4_TOWN_START, Location.A4_WP): [162],
             (Location.A4_TOWN_START, Location.A4_TYRAEL_STASH): [160, 161],

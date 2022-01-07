@@ -129,6 +129,7 @@ class Config:
             "atk_len_shenk": float(self._select_val("char", "atk_len_shenk")),
             "atk_len_nihlatak": float(self._select_val("char", "atk_len_nihlatak")),
             "always_repair": bool(int(self._select_val("char", "always_repair"))),
+            "teleport_item": bool(int(self._select_val("char", "teleport_item"))),
         }
 
         # Sorc base config

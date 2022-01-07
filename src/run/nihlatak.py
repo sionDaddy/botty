@@ -111,5 +111,5 @@ class Nihlatak:
         self._char.kill_nihlatak(end_nodes)
         wait(0.2, 0.3)
         picked_up_items = self._pickit.pick_up_items(self._char)
-        self._game_stats.log_kill_nihlatak();
+        self._game_stats.log_kill_nihlatak()
         return (Location.A5_NIHLATAK_END, picked_up_items)

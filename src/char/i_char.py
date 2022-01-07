@@ -26,8 +26,11 @@ class IChar:
         self._last_tp = time.time()
         # Add a bit to be on the save side
         self._cast_duration = self._char_config["casting_frames"] * 0.04 + 0.01
+        self._disable_teleport = False
 
     def can_teleport(self) -> bool:
+        if self._disable_teleport:
+            return False
         return bool(self._skill_hotkeys["teleport"])
 
     def pick_up_item(self, pos: Tuple[float, float], item_name: str = None, prev_cast_start: float = 0):
@@ -82,7 +85,7 @@ class IChar:
 
     def move(self, pos_monitor: Tuple[float, float], force_tp: bool = False, force_move: bool = False):
         factor = self._config.advanced_options["pathing_delay_factor"]
-        if self._skill_hotkeys["teleport"] and (force_tp or self._ui_manager.is_right_skill_active()):
+        if self._skill_hotkeys["teleport"] and (force_tp or self._ui_manager.is_right_skill_active()) and not self._disable_teleport:
             mouse.move(pos_monitor[0], pos_monitor[1], randomize=3, delay_factor=[factor*0.1, factor*0.14])
             wait(0.012, 0.02)
             mouse.click(button="right")

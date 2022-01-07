@@ -17,6 +17,7 @@ from template_finder import TemplateFinder
 
 from messenger import Messenger
 from game_stats import GameStats
+from item.item_name_converter import ItemNameConverter
 
 
 class UiManager():
@@ -29,6 +30,7 @@ class UiManager():
         self._game_stats = game_stats
         self._screen = screen
         self._curr_stash = {"items": 0, "gold": 0} #0: personal, 1: shared1, 2: shared2, 3: shared3
+        self._item_name_converter = ItemNameConverter()
 
     def use_wp(self, act: int, idx: int):
         """
@@ -270,7 +272,8 @@ class UiManager():
             exclude_props = self._config.items[x.name].exclude
             if not (include_props or exclude_props):
                 Logger.debug(f"{x.name}: Stashing")
-                self._game_stats.log_item_keep(x.name, self._config.items[x.name].pickit_type == 2)
+                item_name = self._item_name_converter.get_item_name(x.name)
+                self._game_stats.log_item_keep(x.name, item_name, self._config.items[x.name].pickit_type == 2)
                 filtered_list.append(x)
                 continue
             include = True
@@ -320,7 +323,8 @@ class UiManager():
                     break
             if include and not exclude:
                 Logger.debug(f"{x.name}: Stashing. Required {include_logic_type}({include_props})={include}, exclude {exclude_logic_type}({exclude_props})={exclude}")
-                self._game_stats.log_item_keep(x.name, self._config.items[x.name].pickit_type == 2)
+                item_name = self._item_name_converter.get_item_name(x.name)
+                self._game_stats.log_item_keep(x.name, item_name, self._config.items[x.name].pickit_type == 2)
                 filtered_list.append(x)
 
         return len(filtered_list) > 0

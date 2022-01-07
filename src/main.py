@@ -3,6 +3,7 @@ import os
 from beautifultable import BeautifulTable
 import logging
 import traceback
+import time
 
 from game_controller import GameController
 from utils.misc import restore_d2r_window_visibility
@@ -64,24 +65,31 @@ def main():
 
     print(f"============ Botty {__version__} [name: {config.general['name']}] ============")
     print("\nFor gettings started and documentation\nplease read https://github.com/aeon0/botty\n")
-    table = BeautifulTable()
-    table.rows.append([config.general['restore_settings_from_backup_key'], "Restore D2R settings from backup"])
-    table.rows.append([config.general['settings_backup_key'], "Backup D2R current settings"])
-    table.rows.append([config.general['auto_settings_key'], "Adjust D2R settings"])
-    table.rows.append([config.general['graphic_debugger_key'], "Start / Stop Graphic debugger"])
-    table.rows.append([config.general['resume_key'], "Start / Pause Botty"])
-    table.rows.append([config.general['exit_key'], "Stop bot"])
-    table.columns.header = ["hotkey", "action"]
-    print(table)
-    print("\n")
+    
+    if config.general['auto_run']:
+        print("Botty auto start : Botty will be run, after 2 seconds..")
+        print("\n")
+        time.sleep(2)
+        start_or_pause_bot()
+    else:
+        table = BeautifulTable()
+        table.rows.append([config.general['restore_settings_from_backup_key'], "Restore D2R settings from backup"])
+        table.rows.append([config.general['settings_backup_key'], "Backup D2R current settings"])
+        table.rows.append([config.general['auto_settings_key'], "Adjust D2R settings"])
+        table.rows.append([config.general['graphic_debugger_key'], "Start / Stop Graphic debugger"])
+        table.rows.append([config.general['resume_key'], "Start / Pause Botty"])
+        table.rows.append([config.general['exit_key'], "Stop bot"])
+        table.columns.header = ["hotkey", "action"]
+        print(table)
+        print("\n")
 
-    keyboard.add_hotkey(config.general['auto_settings_key'], lambda: adjust_settings(config))
-    keyboard.add_hotkey(config.general['graphic_debugger_key'], lambda: start_or_stop_graphic_debugger())
-    keyboard.add_hotkey(config.general['restore_settings_from_backup_key'], lambda: restore_settings_from_backup(config))
-    keyboard.add_hotkey(config.general['settings_backup_key'], lambda: backup_settings(config))
-    keyboard.add_hotkey(config.general['resume_key'], lambda c: start_or_pause_bot(), args=[config])
-    keyboard.add_hotkey(config.general["exit_key"], lambda: on_exit(config))
-    keyboard.wait()
+        keyboard.add_hotkey(config.general['auto_settings_key'], lambda: adjust_settings(config))
+        keyboard.add_hotkey(config.general['graphic_debugger_key'], lambda: start_or_stop_graphic_debugger())
+        keyboard.add_hotkey(config.general['restore_settings_from_backup_key'], lambda: restore_settings_from_backup(config))
+        keyboard.add_hotkey(config.general['settings_backup_key'], lambda: backup_settings(config))
+        keyboard.add_hotkey(config.general['resume_key'], lambda c: start_or_pause_bot(), args=[config])
+        keyboard.add_hotkey(config.general["exit_key"], lambda: on_exit(config))
+        keyboard.wait()
 
 
 if __name__ == "__main__":

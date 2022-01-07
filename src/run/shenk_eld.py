@@ -8,6 +8,7 @@ from template_finder import TemplateFinder
 from town.town_manager import TownManager
 from ui import UiManager
 from utils.misc import wait
+from game_stats import GameStats
 
 
 class ShenkEld:
@@ -18,7 +19,8 @@ class ShenkEld:
         town_manager: TownManager,
         ui_manager: UiManager,
         char: IChar,
-        pickit: PickIt
+        pickit: PickIt,
+        game_stats: GameStats = None
     ):
         self._config = Config()
         self._template_finder = template_finder
@@ -27,6 +29,7 @@ class ShenkEld:
         self._ui_manager = ui_manager
         self._char = char
         self._pickit = pickit
+        self._game_stats = game_stats
 
     def approach(self, start_loc: Location) -> Union[bool, Location, bool]:
         Logger.info("Run Eldritch")
@@ -54,6 +57,7 @@ class ShenkEld:
         loc = Location.A5_ELDRITCH_END
         wait(0.2, 0.3)
         picked_up_items = self._pickit.pick_up_items(self._char)
+        game_stats.log_kill_eld();
 
         # Shenk
         if do_shenk:
@@ -67,5 +71,6 @@ class ShenkEld:
             loc = Location.A5_SHENK_END
             wait(1.9, 2.4) # sometimes merc needs some more time to kill shenk...
             picked_up_items |= self._pickit.pick_up_items(self._char)
+            game_stats.log_kill_shenk();
 
         return (loc, picked_up_items)

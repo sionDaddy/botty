@@ -12,6 +12,9 @@ from math import cos, sin, dist
 import subprocess
 from win32con import HWND_TOPMOST, SWP_NOMOVE, SWP_NOSIZE, HWND_TOP, HWND_BOTTOM, SWP_NOZORDER, SWP_NOOWNERZORDER, HWND_DESKTOP, SWP_NOSENDCHANGING, SWP_SHOWWINDOW, HWND_NOTOPMOST
 from win32gui import GetWindowText, SetWindowPos, EnumWindows
+import json
+import win32api
+from collections import OrderedDict
 
 
 def close_down_d2():
@@ -108,3 +111,47 @@ def rotate_vec(vec: np.ndarray, deg: float) -> np.ndarray:
 
 def unit_vector(vec: np.ndarray) -> np.ndarray:
     return vec / dist(vec, (0, 0))
+
+def run_d2r(path: str):
+    Logger.info(f'Execute File : {path}')    
+    
+    base_path = path.replace( "\D2R.exe", "" );
+    video_path = base_path + "\mods\\botty\\botty.mpq\\data\\hd\\global\\video"
+
+    blizzardlogos = video_path + "\\blizzardlogos.webm"
+    logoanim = video_path + "\\logoanim.webm"
+    modinfo_name = base_path + "\mods\\botty\\botty.mpq\\modinfo.json"
+
+    #Logger.info(f'Base Path : {base_path}')    
+    #Logger.info(f'video path : {video_path}')    
+    #Logger.info(f'mode path : {blizzardlogos}')    
+    path_flag = os.path.isdir(video_path)
+    file_flag = os.path.isfile(blizzardlogos)
+    file_flag2 = os.path.isfile(logoanim)
+    file_flag3 = os.path.isfile(modinfo_name)
+
+    if not path_flag:
+        os.makedirs(video_path)
+        Logger.info(f'Botty mod not found! will create botty mod')    
+
+    if not file_flag:
+        with open(blizzardlogos, 'w'):
+            pass
+
+    if not file_flag2:
+        with open(logoanim, 'w'):
+            pass
+
+    file_data = OrderedDict()
+    file_data["name"] = "botty"
+    file_data["savepath"] = "../"
+    #print( json.dumps(file_data, ensure_ascii=False, indent="\t"))
+    if not file_flag3:
+        with open(modinfo_name, 'w', encoding="utf-8") as make_file:
+            json.dump(file_data, make_file, ensure_ascii=False, indent="\t")
+        
+    #os.startfile(path + " -mod botty -txt")
+    try:
+        win32api.WinExec(path + " -mod botty -txt")  # seamless 동작
+    except:
+       pass

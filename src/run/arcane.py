@@ -11,6 +11,7 @@ from utils.misc import wait
 from dataclasses import dataclass
 from chest import Chest
 from screen import Screen
+from game_stats import GameStats
 
 
 class Arcane:
@@ -22,7 +23,8 @@ class Arcane:
         town_manager: TownManager,
         ui_manager: UiManager,
         char: IChar,
-        pickit: PickIt
+        pickit: PickIt,
+        game_stats: GameStats = None
     ):
         self._config = Config()
         self._template_finder = template_finder
@@ -32,6 +34,7 @@ class Arcane:
         self._char = char
         self._pickit = pickit
         self._chest = Chest(screen, self._char, self._template_finder, 'arcane')
+        self._game_stats = game_stats
         self.used_tps = 0
 
     def approach(self, start_loc: Location) -> Union[bool, Location]:
@@ -97,6 +100,7 @@ class Arcane:
                 self._chest.open_up_chests()
             picked_up_items |= self._pickit.pick_up_items(self._char)
             if found:
+                self._game_stats.log_kill_arc();
                 return (Location.A2_ARC_END, picked_up_items)
             elif i < len(path_arr) - 1:
                 # Open TP and return back to town, walk to wp and start over

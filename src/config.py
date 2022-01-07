@@ -62,6 +62,13 @@ class Config:
             "info_screenshots": bool(int(self._select_val("general", "info_screenshots"))),
             "loot_screenshots": bool(int(self._select_val("general", "loot_screenshots"))),
             "d2r_path": self._select_val("general", "d2r_path"),
+            "auto_run": bool(int(self._select_val("general", "auto_run"))),
+            "break_time_run": int(self._select_val("general", "break_time_run")),
+            "break_time_run_random": int(self._select_val("general", "break_time_run_random")),
+            "break_time_duration": int(self._select_val("general", "break_time_duration")),
+            "pre_wait_time_min": int(self._select_val("general", "pre_wait_time_min")),
+            "pre_wait_time_max": int(self._select_val("general", "pre_wait_time_max")),
+            "discord_run_count": bool(int(self._select_val("general", "discord_run_count"))),
         }
 
         # Added for dclone ip hunting
@@ -108,6 +115,8 @@ class Config:
             "id_items": bool(int(self._select_val("char", "id_items"))),
             "open_chests": bool(int(self._select_val("char", "open_chests"))),
             "pre_buff_every_run": bool(int(self._select_val("char", "pre_buff_every_run"))),
+            "pre_buff_eldritch": bool(int(self._select_val("char", "pre_buff_eldritch"))),
+            "pre_buff_nihlatak": bool(int(self._select_val("char", "pre_buff_nihlatak"))),
             "cta_available": bool(int(self._select_val("char", "cta_available"))),
             "weapon_switch": self._select_val("char", "weapon_switch"),
             "battle_orders": self._select_val("char", "battle_orders"),
@@ -163,7 +172,7 @@ class Config:
             self.basic.update(self._custom["basic"])            
 
         # Basic Ranged config
-        self.basic = self._config["basic_ranged"]
+        self.basic_ranged = self._config["basic_ranged"]
         if "basic_ranged" in self._custom:
             self.basic_ranged.update(self._custom["basic_ranged"])   
 

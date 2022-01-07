@@ -8,6 +8,7 @@ from template_finder import TemplateFinder
 from town.town_manager import TownManager
 from ui import UiManager
 from utils.misc import wait
+from game_stats import GameStats
 
 
 class Trav:
@@ -18,7 +19,8 @@ class Trav:
         town_manager: TownManager,
         ui_manager: UiManager,
         char: IChar,
-        pickit: PickIt
+        pickit: PickIt,
+        game_stats: GameStats = None
     ):
         self._config = Config()
         self._template_finder = template_finder
@@ -27,6 +29,7 @@ class Trav:
         self._ui_manager = ui_manager
         self._char = char
         self._pickit = pickit
+        self._game_stats = game_stats
 
     def approach(self, start_loc: Location) -> Union[bool, Location]:
         # Go to Travincal via waypoint
@@ -57,6 +60,7 @@ class Trav:
             if not self._pather.traverse_nodes([229], self._char, time_out=2.5):
                 self._pather.traverse_nodes([228, 229], self._char, time_out=2.5)
             picked_up_items |= self._pickit.pick_up_items(self._char, is_at_trav=True)
+        self._game_stats.log_kill_triv();
         # Make sure we go back to the center to not hide the tp
         self._pather.traverse_nodes([230], self._char, time_out=2.5)
         return (Location.A3_TRAV_CENTER_STAIRS, picked_up_items)

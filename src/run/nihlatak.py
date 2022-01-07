@@ -10,6 +10,7 @@ from ui import UiManager
 from utils.misc import wait
 from dataclasses import dataclass
 from screen import Screen
+from game_stats import GameStats
 import random
 
 
@@ -22,7 +23,8 @@ class Nihlatak:
         town_manager: TownManager,
         ui_manager: UiManager,
         char: IChar,
-        pickit: PickIt
+        pickit: PickIt,
+        game_stats: GameStats = None
     ):
         self._config = Config()
         self._screen = screen
@@ -32,6 +34,7 @@ class Nihlatak:
         self._ui_manager = ui_manager
         self._char = char
         self._pickit = pickit
+        self._game_stats = game_stats
 
     def approach(self, start_loc: Location) -> Union[bool, Location, bool]:
         Logger.info("Run Nihlatak")
@@ -108,4 +111,5 @@ class Nihlatak:
         self._char.kill_nihlatak(end_nodes)
         wait(0.2, 0.3)
         picked_up_items = self._pickit.pick_up_items(self._char)
+        self._game_stats.log_kill_nihlatak();
         return (Location.A5_NIHLATAK_END, picked_up_items)

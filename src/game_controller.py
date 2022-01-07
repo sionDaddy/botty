@@ -17,6 +17,8 @@ from screen import Screen
 from utils.misc import kill_thread
 from utils.restart import restart_game
 from utils.misc import kill_thread, set_d2r_always_on_top, restore_d2r_window_visibility
+from utils.misc import run_d2r, close_down_d2
+from ui.restart_manager import RestartManager
 
 class GameController:
     is_running = False
@@ -49,9 +51,11 @@ class GameController:
         while 1:
             self.health_manager.update_location(self.bot.get_curr_location())
             max_game_length_reached = self.game_stats.get_current_game_length() > self._config.general["max_game_length_s"]
-            if max_game_length_reached or self.death_manager.died() or self.health_manager.did_chicken():
+            if max_game_length_reached or self.death_manager.died() or self.health_manager.did_chicken() or self.bot._isBreakTime:
                 # Some debug and logging
-                if max_game_length_reached:
+                if self.bot._isBreakTime:
+                    Logger.info(f"Now Botty is BreakTime!!!")
+                elif max_game_length_reached:
                     Logger.info(f"Max game length reached. Attempting to restart {self._config.general['name']}!")
                     if self._config.general["info_screenshots"]:
                         cv2.imwrite("./info_screenshots/info_max_game_length_reached_" + time.strftime("%Y%m%d_%H%M%S") + ".png", self.screen.grab())
@@ -62,10 +66,52 @@ class GameController:
                 self.bot.stop()
                 kill_thread(self.bot_thread)
                 # Try to recover from whatever situation we are and go back to hero selection
-                do_restart = self.game_recovery.go_to_hero_selection()
+                if self.bot._isBreakTime == False:
+                    do_restart = self.game_recovery.go_to_hero_selection()
                 break
             time.sleep(0.5)
         self.bot_thread.join()
+        if self.bot._isBreakTime:
+            close_down_d2()
+            time.sleep( self._config.general["break_time_duration"] * 60 )
+        
+            Logger.info(f"BreakTime is End!!! D2R Will be Start!!!")
+            self.game_stats._send_message_thread(f"{self._config.general['name']}: BreakTime is End!!! D2R Will be Start!!!")
+            run_d2r( self._config.general["d2r_path"] )
+            time.sleep( 3 )
+        
+            Logger.info(f"Waiting D2R Logo screen...")
+            rm = RestartManager(self._config.general["monitor"])
+            start_time = time.time()
+            res = False;
+            # wait for 150sec        
+            while time.time() - start_time < 150:
+                res = rm.wait_d2_intro()
+                if res:
+                    Logger.info(f"Find Secuess")
+                    break;
+        
+            if res == False:
+                Logger.info(f"Cannot find D2R Screen!! plese Check 'd2r_path' config file")
+                os._exit(1)
+                return;
+                
+            Logger.info(f"Botty Will be Start!!!")
+            self.game_stats._send_message_thread(f"{self._config.general['name']}: Botty Will be Start!!!")
+            # Reset flags before running a new bot
+            self.death_manager.reset_death_flag()
+            self.health_manager.reset_chicken_flag()
+            self.game_stats.reset_game()
+            
+            if self.setup_screen():
+                self.start_health_manager_thread()
+                self.start_death_manager_thread()
+                self.game_recovery = GameRecovery(self.screen, self.death_manager)
+                return self.run_bot(True)
+            Logger.error(f"{self._config.general['name']} could not restart the game. Quitting.")
+            if self._config.general["custom_message_hook"]:
+                messenger.send(msg=f"{self._config.general['name']}: got stuck and will now quit")
+            os._exit(1)
         if do_restart:
             # Reset flags before running a new bot
             self.death_manager.reset_death_flag()

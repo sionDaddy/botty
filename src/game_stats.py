@@ -27,6 +27,14 @@ class GameStats:
         self._location = None
         self._location_stats = {}
         self._stats_filename = f'stats_{time.strftime("%Y%m%d_%H%M%S")}.log'
+        self._game_counter_breaktime = 0
+        self._kill_count_pindle = 0
+        self._kill_count_eld = 0
+        self._kill_count_shenk = 0
+        self._kill_count_triv = 0
+        self._kill_count_nihlatak = 0
+        self._kill_count_arc = 0;
+        self._route_config = self._config.routes
         
     def update_location(self, loc: str):
         if self._location != loc:
@@ -52,13 +60,13 @@ class GameStats:
         if self._location not in self._location_stats:
             self._location_stats[self._location] = { "items": [], "deaths": 0, "chickens": 0, "merc_deaths": 0, "failed_runs": 0 }
 
-    def log_item_keep(self, item_name: str, send_message: bool):
+    def log_item_keep(self, item_name: str, item_name_kor: str, send_message: bool):
         filtered_items = ["_potion", "misc_gold"]
         if self._location is not None and not any(substring in item_name for substring in filtered_items):
             self._location_stats[self._location]["items"].append(item_name)
 
         if send_message:
-            msg = f"{self._config.general['name']}: Found {item_name}{self.get_location_msg()}"
+            msg = f"{self._config.general['name']}: Found {item_name_kor}{self.get_location_msg()}"
             self._send_message_thread(msg)
 
     def log_death(self):
@@ -87,6 +95,7 @@ class GameStats:
                 # every discord_status_count game send a message update about current status
                 self._send_status_update()
         self._game_counter += 1
+        self._game_counter_breaktime += 1
         self._timer = time.time()
         Logger.info(f"Starting game #{self._game_counter}")
 
@@ -103,6 +112,25 @@ class GameStats:
             Logger.warning(f"End failed game: Elpased time: {elapsed_time:.2f}s")
         else:
             Logger.info(f"End game. Elapsed time: {elapsed_time:.2f}s")
+            
+        if self._config.general["discord_run_count"]:
+            data = f"{self._config.general['name']}: runs={self._game_counter} [ "
+            dataArray = [];
+            if self._route_config["run_pindle"]:
+                dataArray.append( f"Pin={self._kill_count_pindle}" )
+            if self._route_config["run_eldritch"]:
+                dataArray.append( f"Eld={self._kill_count_eld}" )
+            if self._route_config["run_shenk"]:
+                dataArray.append( f"Shk={self._kill_count_shenk}" )
+            if self._route_config["run_trav"]:
+                dataArray.append( f"Trav={self._kill_count_triv}" )
+            if self._route_config["run_nihlatak"]:
+                dataArray.append( f"Nihl={self._kill_count_nihlatak}" )
+            if self._route_config["run_arcane"]:
+                dataArray.append( f"Arc={self._kill_count_arc}" )
+            data += ', '.join( dataArray )
+            data += " ]"
+            self._send_message_thread( data );
 
     def pause_timer(self):
         if self._timer is None or self._paused:
@@ -181,6 +209,27 @@ class GameStats:
 
         with open(file=f"stats/{self._stats_filename}", mode="w+", encoding="utf-8") as f:
             f.write(msg)
+            
+    def log_kill_pindle(self):
+        self._kill_count_pindle += 1
+    
+    def log_kill_eld(self):
+        self._kill_count_eld += 1
+        
+    def log_kill_shenk(self):
+        self._kill_count_shenk += 1
+        
+    def log_kill_triv(self):
+        self._kill_count_triv += 1
+        
+    def log_kill_nihlatak(self):
+        self._kill_count_nihlatak += 1
+        
+    def log_kill_arc(self):
+        self._kill_count_arc += 1
+        
+    def reset_game(self):
+        self._game_counter_breaktime = 0
 
 
 if __name__ == "__main__":

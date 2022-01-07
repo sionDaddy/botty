@@ -8,6 +8,7 @@ from template_finder import TemplateFinder
 from town.town_manager import TownManager
 from ui import UiManager
 from utils.misc import wait
+from game_stats import GameStats
 
 
 class Pindle:
@@ -18,7 +19,8 @@ class Pindle:
         town_manager: TownManager,
         ui_manager: UiManager,
         char: IChar,
-        pickit: PickIt
+        pickit: PickIt,
+        game_stats: GameStats = None
     ):
         self._config = Config()
         self._template_finder = template_finder
@@ -27,6 +29,7 @@ class Pindle:
         self._ui_manager = ui_manager
         self._char = char
         self._pickit = pickit
+        self._game_stats = game_stats
 
     def approach(self, start_loc: Location) -> Union[bool, Location]:
         # Go through Red Portal in A5
@@ -57,4 +60,5 @@ class Pindle:
         self._char.kill_pindle()
         wait(0.2, 0.3)
         picked_up_items = self._pickit.pick_up_items(self._char)
+        self._game_stats.log_kill_pindle();
         return (Location.A5_PINDLE_END, picked_up_items)

@@ -103,11 +103,11 @@ class Bot:
         Logger.info(f"Doing runs: {self._do_runs_reset.keys()}")
         if self._config.general["randomize_runs"]:
             self.shuffle_runs()
-        self._pindle = Pindle(self._template_finder, self._pather, self._town_manager, self._ui_manager, self._char, self._pickit)
-        self._shenk = ShenkEld(self._template_finder, self._pather, self._town_manager, self._ui_manager, self._char, self._pickit)
-        self._trav = Trav(self._template_finder, self._pather, self._town_manager, self._ui_manager, self._char, self._pickit)
-        self._nihlatak = Nihlatak(self._screen, self._template_finder, self._pather, self._town_manager, self._ui_manager, self._char, self._pickit)
-        self._arcane = Arcane(self._screen, self._template_finder, self._pather, self._town_manager, self._ui_manager, self._char, self._pickit)
+        self._pindle = Pindle(self._template_finder, self._pather, self._town_manager, self._ui_manager, self._char, self._pickit, self._game_stats)
+        self._shenk = ShenkEld(self._template_finder, self._pather, self._town_manager, self._ui_manager, self._char, self._pickit, self._game_stats)
+        self._trav = Trav(self._template_finder, self._pather, self._town_manager, self._ui_manager, self._char, self._pickit, self._game_stats)
+        self._nihlatak = Nihlatak(self._screen, self._template_finder, self._pather, self._town_manager, self._ui_manager, self._char, self._pickit, self._game_stats)
+        self._arcane = Arcane(self._screen, self._template_finder, self._pather, self._town_manager, self._ui_manager, self._char, self._pickit, self._game_stats)
 
         # Create member variables
         self._pick_corpse = pick_corpse
@@ -120,7 +120,9 @@ class Bot:
         self._current_threads = []
         self._no_stash_counter = 0
         self._ran_no_pickup = False
-
+        self._isBreakTime = False
+        self._break_time_runs = self._config.general["break_time_run"] + random.randint(0, self._config.general["break_time_run_random"])
+        
         # Create State Machine
         self._states=['hero_selection', 'town', 'pindle', 'shenk', 'trav', 'nihlatak', 'arcane']
         self._transitions = [
@@ -221,6 +223,10 @@ class Bot:
         self.trigger_or_stop("maintenance")
 
     def on_maintenance(self):
+        if self._config.general["pre_wait_time_min"] > 0 or self._config.general["pre_wait_time_max"] > 0:
+            Logger.info(f"{self._config.general['name']} is wait some seconds..")
+            wait(self._config.general["pre_wait_time_min"], self._config.general["pre_wait_time_max"])
+    
         # Handle picking up corpse in case of death
         if self._pick_corpse:
             self._pick_corpse = False
@@ -312,6 +318,10 @@ class Bot:
         if self._config.general["randomize_runs"]:
             self.shuffle_runs()
         wait(0.2, 0.5)
+        if self._break_time_runs > 0 and self._game_stats._game_counter_breaktime >= self._break_time_runs:
+            self._isBreakTime = True;
+            self._game_stats._send_message_thread(f"{self._config.general['name']}: It's BreakTime!!! ({self._game_stats._game_counter_breaktime} runs)")
+            wait(0.5, 0.8)
         self.trigger_or_stop("create_game")
 
     def on_end_run(self):
@@ -355,6 +365,8 @@ class Bot:
         self._do_runs["run_shenk"] = False
         self._curr_loc = self._shenk.approach(self._curr_loc)
         if self._curr_loc:
+            if self._config.char["pre_buff_eldritch"]:
+                self._pre_buffed = False
             res = self._shenk.battle(self._route_config["run_shenk"], not self._pre_buffed, self._game_stats)
         self._ending_run_helper(res)
 
@@ -373,6 +385,8 @@ class Bot:
         self._game_stats.update_location("Nihl" if self._config.general['discord_status_condensed'] else "Nihlatak")
         self._curr_loc = self._nihlatak.approach(self._curr_loc)
         if self._curr_loc:
+            if self._config.char["pre_buff_nihlatak"]:
+                self._pre_buffed = False
             res = self._nihlatak.battle(not self._pre_buffed)
         self._ending_run_helper(res)
 

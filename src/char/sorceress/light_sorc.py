@@ -63,6 +63,9 @@ class LightSorc(Sorceress):
         return True
 
     def kill_shenk(self) -> bool:
+        if self._skill_hotkeys["shenk_type"] != "0":
+            return self.kill_shenk_type1();
+            
         shenk_pos_abs = self._pather.find_abs_node_pos(149, self._screen.grab())
         if shenk_pos_abs is None:
             shenk_pos_abs = self._screen.convert_screen_to_abs(self._config.path["shenk_end"][0])
@@ -70,6 +73,32 @@ class LightSorc(Sorceress):
         for _ in range(int(self._char_config["atk_len_shenk"])):
             self._chain_lightning(cast_pos_abs, spray=90)
         self._lightning(cast_pos_abs, spray=60)
+        # Move to items
+        wait(self._cast_duration, self._cast_duration + 0.2)
+        self._pather.traverse_nodes((Location.A5_SHENK_SAFE_DIST, Location.A5_SHENK_END), self, time_out=1.4, force_tp=True)
+        return True
+        
+    def kill_shenk_type1(self):
+        # Logger.info("Start Shenk Type 1")
+		
+        pos = [ int(self._skill_hotkeys["shenk_type2_x"]), int(self._skill_hotkeys["shenk_type2_y"]) ];
+        x_m, y_m = self._screen.convert_screen_to_monitor(pos)
+        x_m += int(random.random() * 6 - 3)
+        y_m += int(random.random() * 6 - 3)
+        self.move((x_m, y_m), True)
+		
+        shenk_pos_abs = self._pather.find_abs_node_pos(149, self._screen.grab())
+        if shenk_pos_abs is None:
+            shenk_pos_abs = self._screen.convert_screen_to_abs(self._config.path["shenk_end"][0])
+            cast_pos_abs_main = [shenk_pos_abs[0] * 0.9, shenk_pos_abs[1] * 0.9]
+        else:
+            cast_pos_abs_main = [shenk_pos_abs[0] * 0.9 + 85, shenk_pos_abs[1] * 0.9 + 50]
+        cast_pos_abs = [shenk_pos_abs[0] * 0.9, shenk_pos_abs[1] * 0.9]
+        
+        for _ in range(int(self._char_config["atk_len_shenk"])):
+            self._lightning(cast_pos_abs_main, spray=5)
+            self._chain_lightning(cast_pos_abs, spray=60)
+        
         # Move to items
         wait(self._cast_duration, self._cast_duration + 0.2)
         self._pather.traverse_nodes((Location.A5_SHENK_SAFE_DIST, Location.A5_SHENK_END), self, time_out=1.4, force_tp=True)

@@ -12,6 +12,7 @@ from ui import UiManager
 from utils.misc import wait
 from utils.custom_mouse import mouse
 from screen import Screen
+from game_stats import GameStats
 
 
 class Diablo:
@@ -23,7 +24,8 @@ class Diablo:
         town_manager: TownManager,
         ui_manager: UiManager,
         char: IChar,
-        pickit: PickIt
+        pickit: PickIt,
+        game_stats: GameStats = None
     ):
         self._config = Config()
         self._screen = screen
@@ -35,6 +37,7 @@ class Diablo:
         self._pickit = pickit
         self._picked_up_items = False
         self.used_tps = 0
+        self._game_stats = game_stats
 
     def approach(self, start_loc: Location) -> Union[bool, Location, bool]:
         Logger.info("Run Diablo /!\ BETA Version /!\ please do not run without supervision.")
@@ -454,6 +457,7 @@ class Diablo:
         wait(0.2, 0.3)
         if self._config.general["info_screenshots"]: cv2.imwrite(f"./info_screenshots/_dia_kill_" + time.strftime("%Y%m%d_%H%M%S") + ".png", self._screen.grab())
         self._picked_up_items = self._pickit.pick_up_items(self._char)
+        self._game_stats.log_kill_dia()
         return (Location.A4_DIABLO_END, self._picked_up_items)
 
 if __name__ == "__main__":

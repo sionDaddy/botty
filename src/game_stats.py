@@ -35,7 +35,8 @@ class GameStats:
         self._kill_count_shenk = 0
         self._kill_count_triv = 0
         self._kill_count_nihlatak = 0
-        self._kill_count_arc = 0;
+        self._kill_count_arc = 0
+        self._kill_count_dia = 0
         self._route_config = self._config.routes
         
     def update_location(self, loc: str):
@@ -107,7 +108,7 @@ class GameStats:
             
         if self._config.general["discord_run_count"]:
             data = f"{self._config.general['name']}: runs={self._game_counter} [ "
-            dataArray = [];
+            dataArray = []
             if self._route_config["run_pindle"]:
                 dataArray.append( f"Pin={self._kill_count_pindle}" )
             if self._route_config["run_eldritch"]:
@@ -120,9 +121,11 @@ class GameStats:
                 dataArray.append( f"Nihl={self._kill_count_nihlatak}" )
             if self._route_config["run_arcane"]:
                 dataArray.append( f"Arc={self._kill_count_arc}" )
+            if self._route_config["run_diablo"]:
+                dataArray.append( f"Dia={self._kill_count_dia}" )
             data += ', '.join( dataArray )
             data += " ]"
-            self._send_message_thread( data );
+            self._send_message_thread( data )
 
     def pause_timer(self):
         if self._timer is None or self._paused:
@@ -217,6 +220,9 @@ class GameStats:
         
     def log_kill_arc(self):
         self._kill_count_arc += 1
+
+    def log_kill_dia(self):
+        self._kill_count_dia += 1
         
     def reset_game(self):
         self._game_counter_breaktime = 0

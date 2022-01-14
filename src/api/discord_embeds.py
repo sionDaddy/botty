@@ -20,7 +20,7 @@ class DiscordEmbeds(GenericApi):
     def send_item(self, item: str, image:  np.ndarray, location: str):
         imgName = item.replace('_', '-')
 
-        itemNameKor = item_name_converter.get_item_name( item )
+        itemNameKor = self._item_name_converter.get_item_name( item )
 
         _, w, _ = image.shape
         image = image[:, (w//2):,:]

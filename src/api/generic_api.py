@@ -2,13 +2,16 @@ from config import Config
 import numpy as np
 import json
 import requests
+from item.item_name_converter import ItemNameConverter
 
 class GenericApi:
     def __init__(self):
         self._config = Config()
+        self._item_name_converter = ItemNameConverter()
 
     def send_item(self, item: str, image:  np.ndarray, location: str):
-        msg = f"Found {item} at {location}"
+        itemNameKor = self._item_name_converter.get_item_name( item )
+        msg = f"Found {itemNameKor} at {location}"
         self._send(msg)
         
     def send_death(self, location: str, image_path: str = None):

@@ -6,9 +6,14 @@ from api.generic_api import GenericApi
 from api.discord_embeds import DiscordEmbeds
 
 class Messenger:
-    def __init__(self):
+    def __init__(self, type = None):
         self._config = Config()
-        if self._config.general["message_api_type"] == "generic_api":
+        if type is not None:
+            if type == "generic_api":
+                self._message_api = GenericApi()
+            elif type == "discord":
+                self._message_api = DiscordEmbeds()
+        elif self._config.general["message_api_type"] == "generic_api":
             self._message_api = GenericApi()
         elif self._config.general["message_api_type"] == "discord":
             self._message_api = DiscordEmbeds()

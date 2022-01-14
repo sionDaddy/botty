@@ -15,6 +15,7 @@ class GameStats:
     def __init__(self):
         self._config = Config()
         self._messenger = Messenger()
+        self._messenger_run = Messenger("generic_api")
         self._start_time = time.time()
         self._timer = None
         self._timepaused = None
@@ -107,7 +108,7 @@ class GameStats:
             Logger.info(f"End game. Elapsed time: {elapsed_time:.2f}s")
             
         if self._config.general["discord_run_count"]:
-            data = f"{self._config.general['name']}: runs={self._game_counter} [ "
+            data = f"runs={self._game_counter} [ "
             dataArray = []
             if self._route_config["run_pindle"]:
                 dataArray.append( f"Pin={self._kill_count_pindle}" )
@@ -125,7 +126,7 @@ class GameStats:
                 dataArray.append( f"Dia={self._kill_count_dia}" )
             data += ', '.join( dataArray )
             data += " ]"
-            self._send_message_thread( data )
+            self._messenger_run.send_message( data )
 
     def pause_timer(self):
         if self._timer is None or self._paused:

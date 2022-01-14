@@ -68,9 +68,9 @@ class Bot:
         elif self._config.char["type"] == "necro":
             self._char: IChar = Necro(self._config.necro, self._config.char, self._screen, self._template_finder, self._ui_manager, self._pather)
         elif self._config.char["type"] == "basic":
-            self._char: IChar = Basic(self._config.basic, self._config.char, self._screen, self._template_finder, self._ui_manager, self._pather)            
+            self._char: IChar = Basic(self._config.basic, self._config.char, self._screen, self._template_finder, self._ui_manager, self._pather)
         elif self._config.char["type"] == "basic_ranged":
-            self._char: IChar = Basic_Ranged(self._config.basic, self._config.char, self._screen, self._template_finder, self._ui_manager, self._pather)                
+            self._char: IChar = Basic_Ranged(self._config.basic_ranged, self._config.char, self._screen, self._template_finder, self._ui_manager, self._pather)
         else:
             Logger.error(f'{self._config.char["type"]} is not supported! Closing down bot.')
             os._exit(1)
@@ -122,6 +122,7 @@ class Bot:
         self._ran_no_pickup = False
         self._isBreakTime = False
         self._break_time_runs = self._config.general["break_time_run"] + random.randint(0, self._config.general["break_time_run_random"])
+        self._checked_teleport_key = False
         
         # Create State Machine
         self._states=['hero_selection', 'town', 'pindle', 'shenk', 'trav', 'nihlatak', 'arcane']
@@ -199,6 +200,7 @@ class Bot:
         self._template_finder.search_and_wait(["MAIN_MENU_TOP_LEFT","MAIN_MENU_TOP_LEFT_DARK"], roi=self._config.ui_roi["main_menu_top_left"])
         if not self._ui_manager.start_game(): return
         self._curr_loc = self._town_manager.wait_for_town_spawn()
+        self._checked_teleport_key = False
 
         # Check for the current game ip and pause if we are able to obtain the hot ip
         if self._config.dclone["region_ips"] != "" and self._config.dclone["dclone_hotip"] != "":
@@ -206,7 +208,7 @@ class Bot:
             hot_ip = self._config.dclone["dclone_hotip"]
             Logger.debug(f"Current Game IP: {cur_game_ip}   and HOTIP: {hot_ip}")
             if hot_ip == cur_game_ip:
-                self._messenger.send(msg=f"Dclone IP Found on IP: {cur_game_ip}")
+                self._messenger.send_message(f"Dclone IP Found on IP: {cur_game_ip}")
                 print("Press Enter")
                 input()
                 os._exit(1)
@@ -296,6 +298,11 @@ class Bot:
             self._curr_loc = self._town_manager.resurrect(self._curr_loc)
             if not self._curr_loc:
                 return self.trigger_or_stop("end_game", failed=True)
+
+        # check teleport key bind
+        if not self._checked_teleport_key and self._config.char["check_teleport_key"]:
+            self._checked_teleport_key = True
+            self._ui_manager.teleport_key_bind(self._char._skill_hotkeys["teleport"])
 
         # Start a new run
         started_run = False

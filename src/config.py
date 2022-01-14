@@ -56,6 +56,7 @@ class Config:
             "logg_lvl": self._select_val("general", "logg_lvl"),
             "randomize_runs": bool(int(self._select_val("general", "randomize_runs"))),
             "difficulty": self._select_val("general", "difficulty"),
+            "message_api_type": self._select_val("general", "message_api_type"),
             "custom_message_hook": self._select_val("general", "custom_message_hook"),
             "discord_status_count": False if not self._select_val("general", "discord_status_count") else int(self._select_val("general", "discord_status_count")),
             "discord_status_condensed": bool(int(self._select_val("general", "discord_status_condensed"))),
@@ -130,6 +131,8 @@ class Config:
             "atk_len_nihlatak": float(self._select_val("char", "atk_len_nihlatak")),
             "always_repair": bool(int(self._select_val("char", "always_repair"))),
             "teleport_item": bool(int(self._select_val("char", "teleport_item"))),
+            "skill_speed_bar": self._select_val("char", "skill_speed_bar"),
+            "check_teleport_key": bool(int(self._select_val("char", "check_teleport_key"))),
         }
 
         # Sorc base config
@@ -166,16 +169,16 @@ class Config:
         self.barbarian = self._config["barbarian"]
         if "barbarian" in self._custom:
             self.barbarian.update(self._custom["barbarian"])
-            
+
         # Basic config
         self.basic = self._config["basic"]
         if "basic" in self._custom:
-            self.basic.update(self._custom["basic"])            
+            self.basic.update(self._custom["basic"])
 
         # Basic Ranged config
         self.basic_ranged = self._config["basic_ranged"]
         if "basic_ranged" in self._custom:
-            self.basic_ranged.update(self._custom["basic_ranged"])   
+            self.basic_ranged.update(self._custom["basic_ranged"])
 
         # Necro config
         self.necro = self._config["necro"]

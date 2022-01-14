@@ -1,1 +1,1 @@
-__version__ = '0.6.1 (build_0107_3)'
+__version__ = '0.6.2-(sionDaddy)'

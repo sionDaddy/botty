@@ -38,7 +38,7 @@ class GameController:
         self.game_controller_thread = None
         self.bot_thread = None
         self.bot = None
-        self.char_selector = None
+        self.char_selector = None        
 
     def run_bot(self, pick_corpse: bool = False):
         if self._config.general['restart_d2r_when_stuck']:
@@ -60,6 +60,7 @@ class GameController:
         self.health_manager.set_belt_manager(self.bot.get_belt_manager())
         do_restart = False
         messenger = Messenger()
+        messenger_breakTime = Messenger("generic_api")
         while 1:
             self.health_manager.update_location(self.bot.get_curr_location())
             max_game_length_reached = self.game_stats.get_current_game_length() > self._config.general["max_game_length_s"]
@@ -88,7 +89,7 @@ class GameController:
             time.sleep( self._config.general["break_time_duration"] * 60 )
         
             Logger.info(f"BreakTime is End!!! D2R Will be Start!!!")
-            self.game_stats._send_message_thread(f"{self._config.general['name']}: BreakTime is End!!! D2R Will be Start!!!")
+            messenger_breakTime.send_message(f"{self._config.general['name']}: BreakTime is End!!! D2R Will be Start!!!")
             run_d2r( self._config.general["d2r_path"] )
             time.sleep( 3 )
         
@@ -109,7 +110,7 @@ class GameController:
                 return;
                 
             Logger.info(f"Botty Will be Start!!!")
-            self.game_stats._send_message_thread(f"{self._config.general['name']}: Botty Will be Start!!!")
+            messenger_breakTime.send_message(f"{self._config.general['name']}: Botty Will be Start!!!")
             # Reset flags before running a new bot
             self.death_manager.reset_death_flag()
             self.health_manager.reset_chicken_flag()
@@ -118,11 +119,11 @@ class GameController:
             if self.setup_screen():
                 self.start_health_manager_thread()
                 self.start_death_manager_thread()
-                self.game_recovery = GameRecovery(self.screen, self.death_manager)
+                self.game_recovery = GameRecovery(self.screen, self.death_manager, self.template_finder)
                 return self.run_bot(True)
             Logger.error(f"{self._config.general['name']} could not restart the game. Quitting.")
             if self._config.general["custom_message_hook"]:
-                messenger.send(msg=f"{self._config.general['name']}: got stuck and will now quit")
+                messenger_breakTime.send_message(f"{self._config.general['name']}: got stuck and will now quit")
             os._exit(1)
         if do_restart:
             # Reset flags before running a new bot

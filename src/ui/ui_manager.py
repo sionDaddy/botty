@@ -623,6 +623,8 @@ class UiManager():
                 wait(0.9, 1.1)
 
     def teleport_key_bind(self, teleport_key):
+        keyboard.send(teleport_key)
+        wait(0.15, 0.25)
         if self.is_right_skill_selected(["TELE_ACTIVE", "TELE_INACTIVE"]):
             return
         keyboard.send(self._config.char["skill_speed_bar"])

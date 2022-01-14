@@ -334,7 +334,7 @@ class Bot:
         wait(0.2, 0.5)
         if self._break_time_runs > 0 and self._game_stats._game_counter_breaktime >= self._break_time_runs:
             self._isBreakTime = True;
-            self._game_stats._send_message_thread(f"{self._config.general['name']}: It's BreakTime!!! ({self._game_stats._game_counter_breaktime} runs)")
+            self._messenger.send_message(f"{self._config.general['name']}: It's BreakTime!!! ({self._game_stats._game_counter_breaktime} runs)")
             wait(0.5, 0.8)
         self.trigger_or_stop("create_game")
 

@@ -108,7 +108,8 @@ class Nihlatak:
             end_nodes = check_arr[0].end_nodes
 
         # Attack & Pick items
-        self._char.kill_nihlatak(end_nodes)
+        if not self._char.kill_nihlatak(end_nodes):
+            return False
         wait(0.2, 0.3)
         picked_up_items = self._pickit.pick_up_items(self._char)
         self._game_stats.log_kill_nihlatak()

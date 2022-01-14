@@ -63,13 +63,14 @@ class Config:
             "info_screenshots": bool(int(self._select_val("general", "info_screenshots"))),
             "loot_screenshots": bool(int(self._select_val("general", "loot_screenshots"))),
             "d2r_path": self._select_val("general", "d2r_path"),
+            "restart_d2r_when_stuck": bool(int(self._select_val("general", "restart_d2r_when_stuck"))),
             "auto_run": bool(int(self._select_val("general", "auto_run"))),
             "break_time_run": int(self._select_val("general", "break_time_run")),
             "break_time_run_random": int(self._select_val("general", "break_time_run_random")),
             "break_time_duration": int(self._select_val("general", "break_time_duration")),
             "pre_wait_time_min": int(self._select_val("general", "pre_wait_time_min")),
             "pre_wait_time_max": int(self._select_val("general", "pre_wait_time_max")),
-            "discord_run_count": bool(int(self._select_val("general", "discord_run_count"))),
+            "discord_run_count": bool(int(self._select_val("general", "discord_run_count"))),            
         }
 
         # Added for dclone ip hunting
@@ -129,6 +130,12 @@ class Config:
             "atk_len_eldritch": float(self._select_val("char", "atk_len_eldritch")),
             "atk_len_shenk": float(self._select_val("char", "atk_len_shenk")),
             "atk_len_nihlatak": float(self._select_val("char", "atk_len_nihlatak")),
+            "atk_len_diablo_vizier": float(self._select_val("char", "atk_len_diablo_vizier")),
+            "atk_len_diablo_deseis": float(self._select_val("char", "atk_len_diablo_deseis")),
+            "atk_len_diablo_infector": float(self._select_val("char", "atk_len_diablo_infector")),
+            "atk_len_diablo": float(self._select_val("char", "atk_len_diablo")),
+            "atk_len_cs_trashmobs": float(self._select_val("char", "atk_len_cs_trashmobs")),
+            "kill_cs_trash": float(self._select_val("char", "kill_cs_trash")),
             "always_repair": bool(int(self._select_val("char", "always_repair"))),
             "teleport_item": bool(int(self._select_val("char", "teleport_item"))),
             "skill_speed_bar": self._select_val("char", "skill_speed_bar"),
@@ -169,6 +176,8 @@ class Config:
         self.barbarian = self._config["barbarian"]
         if "barbarian" in self._custom:
             self.barbarian.update(self._custom["barbarian"])
+        self.barbarian = dict(self.barbarian)
+        self.barbarian["cry_frequency"] = float(self.barbarian["cry_frequency"])
 
         # Basic config
         self.basic = self._config["basic"]

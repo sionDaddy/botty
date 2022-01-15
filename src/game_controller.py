@@ -25,8 +25,8 @@ from ui.restart_manager import RestartManager
 class GameController:
     is_running = False
 
-    def __init__(self, config: Config):
-        self._config = config
+    def __init__(self):
+        self._config = Config()
         self.screen = None
         self.template_finder = None
         self.health_monitor_thread = None
@@ -167,7 +167,7 @@ class GameController:
         self.start_death_manager_thread()
         self.game_recovery = GameRecovery(self.screen, self.death_manager, self.template_finder)
         self.game_stats = GameStats()
-        self.char_selector = CharSelector(self.screen, self._config, self.template_finder)
+        self.char_selector = CharSelector(self.screen, self.template_finder)
         self.start_game_controller_thread()
         GameController.is_running = True
 

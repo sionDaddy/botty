@@ -125,6 +125,7 @@ class Bot:
         self._isBreakTime = False
         self._break_time_runs = self._config.general["break_time_run"] + random.randint(0, self._config.general["break_time_run_random"])
         self._checked_teleport_key = False
+        self._need_repair = False
         
         # Create State Machine
         self._states=['hero_selection', 'town', 'pindle', 'shenk', 'trav', 'nihlatak', 'arcane', 'diablo']
@@ -204,6 +205,8 @@ class Bot:
         if not self._ui_manager.start_game(): return
         self._curr_loc = self._town_manager.wait_for_town_spawn()
         self._checked_teleport_key = False
+        if self._config.char["every_game_repair"]:
+            self._need_repair = True
 
         # Check for the current game ip and pause if we are able to obtain the hot ip
         if self._config.dclone["region_ips"] != "" and self._config.dclone["dclone_hotip"] != "":
@@ -288,13 +291,20 @@ class Bot:
 
         # Check if we are out of tps or need repairing
         need_repair = self._ui_manager.repair_needed()
+        if self._need_repair:
+            need_repair = True
+            self._need_repair = False
         if self._tps_left < random.randint(3, 5) or need_repair or self._config.char["always_repair"]:
             if need_repair: Logger.info("Repair needed. Gear is about to break")
             else: Logger.info("Repairing and buying TPs at next Vendor")
-            self._curr_loc = self._town_manager.repair_and_fill_tps(self._curr_loc)
+            refill_tps = True
+            if self._tps_left > 6 and ( self._config.char["always_repair"] or self._config.char["every_game_repair"] ):
+                refill_tps = False
+            self._curr_loc = self._town_manager.repair_and_fill_tps(self._curr_loc, refill_tps)
             if not self._curr_loc:
                 return self.trigger_or_stop("end_game", failed=True)
-            self._tps_left = 20
+            if refill_tps:
+                self._tps_left = 20
             wait(1.0)
 
         # Check if merc needs to be revived

@@ -144,14 +144,14 @@ class TownManager:
         self._ui_manager.stash_all_items(self._config.char["num_loot_columns"], self._item_finder)
         return new_loc
 
-    def repair_and_fill_tps(self, curr_loc: Location) -> Union[Location, bool]:
+    def repair_and_fill_tps(self, curr_loc: Location, refill_tps: bool) -> Union[Location, bool]:
         curr_act = TownManager.get_act_from_location(curr_loc)
         if curr_act is None: return False
         # check if we can rapair in current act
         if self._acts[curr_act].can_trade_and_repair():
             new_loc = self._acts[curr_act].open_trade_and_repair_menu(curr_loc)
             if not new_loc: return False
-            if self._ui_manager.repair_and_fill_up_tp():
+            if self._ui_manager.repair_and_fill_up_tp(refill_tps):
                 wait(0.1, 0.2)
                 self._ui_manager.close_vendor_screen()
                 return new_loc
@@ -159,7 +159,7 @@ class TownManager:
         if not new_loc: return False
         new_loc = self._acts[Location.A5_TOWN_START].open_trade_and_repair_menu(new_loc)
         if not new_loc: return False
-        if self._ui_manager.repair_and_fill_up_tp():
+        if self._ui_manager.repair_and_fill_up_tp(refill_tps):
             wait(0.1, 0.2)
             self._ui_manager.close_vendor_screen()
             return new_loc

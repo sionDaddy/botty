@@ -187,6 +187,8 @@ class Config:
             "teleport_item": bool(int(Config._select_val("char", "teleport_item"))),
             "skill_speed_bar": Config._select_val("char", "skill_speed_bar"),
             "check_teleport_key": bool(int(Config._select_val("char", "check_teleport_key"))),
+            "every_game_repair": bool(int(Config._select_val("char", "every_game_repair"))),
+            "always_stash_gold_first": bool(int(Config._select_val("char", "always_stash_gold_first"))),
         }
 
         # Sorc base config

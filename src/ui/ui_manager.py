@@ -158,6 +158,9 @@ class UiManager():
         Starting a game. Will wait and retry on server connection issue.
         :return: Bool if action was successful
         """
+        if self._config.char["always_stash_gold_first"]:
+            self._curr_stash["gold"] = 0
+
         Logger.debug("Wait for Play button")
         while 1:
             img = self._screen.grab()
@@ -366,7 +369,7 @@ class UiManager():
             if inventory_no_gold.valid:
                 Logger.debug("Skipping gold stashing")
             else:
-                Logger.debug("Stashing gold")
+                Logger.debug("Stashing gold")                
                 self._move_to_stash_tab(min(3, self._curr_stash["gold"]))
                 x, y = self._screen.convert_screen_to_monitor(gold_btn.position)
                 mouse.move(x, y, randomize=4)
@@ -494,7 +497,7 @@ class UiManager():
         # mouse.move(x, y, randomize=25, delay_factor=[1.0, 1.5])
         # mouse.click(button="left")
 
-    def repair_and_fill_up_tp(self) -> bool:
+    def repair_and_fill_up_tp(self, refill_tps: bool) -> bool:
         """
         Repair and fills up TP buy selling tome and buying. Vendor inventory needs to be open!
         :return: Bool if success
@@ -507,6 +510,8 @@ class UiManager():
         wait(0.1, 0.15)
         mouse.click(button="left")
         wait(0.1, 0.15)
+        if refill_tps == False:
+            return True
         x, y = self._screen.convert_screen_to_monitor((self._config.ui_pos["vendor_misc_x"], self._config.ui_pos["vendor_misc_y"]))
         mouse.move(x, y, randomize=[20, 6], delay_factor=[1.0, 1.5])
         wait(0.1, 0.15)
@@ -514,7 +519,7 @@ class UiManager():
         # another click to dismiss popup message in case you have not enough gold to repair, preventing tome not being bought back
         wait(0.1, 0.15)
         mouse.click(button="left")
-        wait(0.5, 0.6)
+        wait(0.5, 0.6)        
         tp_tome = self._template_finder.search_and_wait(["TP_TOME", "TP_TOME_RED"], roi=self._config.ui_roi["inventory"], time_out=3)
         if not tp_tome.valid:
             return False

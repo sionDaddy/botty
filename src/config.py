@@ -113,13 +113,14 @@ class Config:
             "loot_screenshots": bool(int(Config._select_val("general", "loot_screenshots"))),
             "d2r_path": Config._select_val("general", "d2r_path"),
             "restart_d2r_when_stuck": bool(int(Config._select_val("general", "restart_d2r_when_stuck"))),
+            "find_window_via_win32_api": bool(int(Config._select_val("general", "find_window_via_win32_api"))),
             "auto_run": bool(int(Config._select_val("general", "auto_run"))),
             "break_time_run": int(Config._select_val("general", "break_time_run")),
             "break_time_run_random": int(Config._select_val("general", "break_time_run_random")),
             "break_time_duration": int(Config._select_val("general", "break_time_duration")),
             "pre_wait_time_min": int(Config._select_val("general", "pre_wait_time_min")),
             "pre_wait_time_max": int(Config._select_val("general", "pre_wait_time_max")),
-            "discord_run_count": bool(int(Config._select_val("general", "discord_run_count"))),
+            "discord_run_count": bool(int(Config._select_val("general", "discord_run_count"))),            
         }
 
         # Added for dclone ip hunting

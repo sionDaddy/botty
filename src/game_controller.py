@@ -92,20 +92,20 @@ class GameController:
             time.sleep( 3 )
         
             Logger.info(f"Waiting D2R Logo screen...")
-            rm = RestartManager(self._config.general["monitor"])
+            rm = RestartManager()
             start_time = time.time()
-            res = False;
+            res = False
             # wait for 150sec        
             while time.time() - start_time < 150:
                 res = rm.wait_d2_intro()
                 if res:
                     Logger.info(f"Find Secuess")
-                    break;
+                    break
         
             if res == False:
                 Logger.info(f"Cannot find D2R Screen!! plese Check 'd2r_path' config file")
                 os._exit(1)
-                return;
+                return
                 
             Logger.info(f"Botty Will be Start!!!")
             messenger_breakTime.send_message(f"{self._config.general['name']}: Botty Will be Start!!!")

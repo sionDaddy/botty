@@ -15,16 +15,12 @@ from win32api import GetSystemMetrics
 
 class RestartManager():
 
-    def __init__(self, monitor: int = 0):
-        self._sct = mss()        
-        monitor_idx = monitor + 1 # sct saves the whole screen (including both monitors if available at index 0, then monitor 1 at 1 and 2 at 2)
+    def __init__(self):
+        self._sct = mss()
         if len(self._sct.monitors) == 1:
             Logger.error("How do you not have a monitor connected?!")
             os._exit(1)
-        if monitor_idx >= len(self._sct.monitors):
-            Logger.warning("Monitor index not available! Choose a smaller number for 'monitor' in the param.ini. Forcing value to 0 for now.")
-            monitor_idx = 1
-        self._monitor_roi = self._sct.monitors[monitor_idx]
+        self._monitor_roi = self._sct.monitors[0]
 
     def grab(self) -> np.ndarray:
         img = np.array(self._sct.grab(self._monitor_roi))
@@ -47,11 +43,11 @@ class RestartManager():
                 mouse.move(max_pos[0] + 50, max_pos[1] + 10, randomize=10, delay_factor=[2.0, 3.0])
                 mouse.click(button="left")
                 time.sleep(1)
-                return True;
+                return True
             elif max_val2 > 0.8:
                 Logger.info(f"Found Hero Selection Screen!!")
-                return True;
+                return True
         
         mouse.move(GetSystemMetrics(0)*0.5, GetSystemMetrics(1)*0.5, randomize=8, delay_factor=[2.0, 3.0])
         mouse.click(button="left")
-        return False;
+        return False

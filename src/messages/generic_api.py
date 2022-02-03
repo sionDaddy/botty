@@ -39,6 +39,8 @@ class GenericApi:
         if not url:
             return
 
+        msg = f"```\\n{msg} \\n```"
+        
         headers = {}
         if self._config.advanced_options['message_headers']:
             headers = json.loads(self._config.advanced_options['message_headers'])

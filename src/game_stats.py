@@ -118,7 +118,7 @@ class GameStats:
                 dataArray.append( f"Shk={self._kill_count_shenk}" )
             if self._route_config["run_trav"]:
                 dataArray.append( f"Trav={self._kill_count_triv}" )
-            if self._route_config["run_nihlatak"]:
+            if self._route_config["run_nihlathak"]:
                 dataArray.append( f"Nihl={self._kill_count_nihlatak}" )
             if self._route_config["run_arcane"]:
                 dataArray.append( f"Arc={self._kill_count_arc}" )

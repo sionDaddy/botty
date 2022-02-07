@@ -54,7 +54,7 @@ class Pindle:
         # move to pindle
         if self._config.char["teleport_item"]:
             self._char._disable_teleport = True
-        if self._char.can_teleport():
+        if self._char.capabilities.can_teleport_natively:
             self._pather.traverse_nodes_fixed("pindle_safe_dist", self._char)
         else:
             if not self._pather.traverse_nodes((Location.A5_PINDLE_START, Location.A5_PINDLE_SAFE_DIST), self._char):

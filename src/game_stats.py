@@ -25,6 +25,8 @@ class GameStats:
         self._death_counter = 0
         self._merc_death_counter = 0
         self._runs_failed = 0
+        self._run_counter = 1
+        self._consecutive_runs_failed = 0
         self._failed_game_time = 0
         self._location = None
         self._location_stats = {}
@@ -38,8 +40,8 @@ class GameStats:
         self._kill_count_nihlatak = 0
         self._kill_count_arc = 0
         self._kill_count_dia = 0
-        self._route_config = self._config.routes
-        
+        self._route_config = self._config.routes        
+
     def update_location(self, loc: str):
         if self._location != loc:
             self._location = str(loc)
@@ -64,7 +66,7 @@ class GameStats:
         if self._location is not None:
             self._location_stats[self._location]["deaths"] += 1
             self._location_stats["totals"]["deaths"] += 1
-            
+
         self._messenger.send_death(self._location, img)
 
     def log_chicken(self, img: str):
@@ -99,12 +101,14 @@ class GameStats:
         self._timer = None
         if failed:
             self._runs_failed += 1
+            self._consecutive_runs_failed += 1
             if self._location is not None:
                 self._location_stats[self._location]["failed_runs"] += 1
                 self._location_stats["totals"]["failed_runs"] += 1
             self._failed_game_time += elapsed_time
-            Logger.warning(f"End failed game: Elpased time: {elapsed_time:.2f}s")
+            Logger.warning(f"End failed game: Elpased time: {elapsed_time:.2f}s Fails: {self._consecutive_runs_failed}")
         else:
+            self._consecutive_runs_failed = 0
             Logger.info(f"End game. Elapsed time: {elapsed_time:.2f}s")
             
         if self._config.general["discord_run_count"]:
@@ -149,6 +153,9 @@ class GameStats:
         else:
             return time.time() - self._timer
 
+    def get_consecutive_runs_failed(self):
+        return self._consecutive_runs_failed
+
     def _create_msg(self):
         elapsed_time = time.time() - self._start_time
         elapsed_time_str = hms(elapsed_time)
@@ -164,7 +171,7 @@ class GameStats:
         table = BeautifulTable()
         table.set_style(BeautifulTable.STYLE_BOX_ROUNDED)
         for location in self._location_stats:
-            if location == "totals": 
+            if location == "totals":
                 continue
             stats = self._location_stats[location]
             table.rows.append([location, len(stats["items"]), stats["chickens"], stats["deaths"], stats["merc_deaths"], stats["failed_runs"]])
@@ -194,7 +201,7 @@ class GameStats:
         msg = self._create_msg()
         msg += "\nItems:"
         for location in self._location_stats:
-            if location == "totals": 
+            if location == "totals":
                 continue
             stats = self._location_stats[location]
             msg += f"\n  {location}:"

@@ -1,4 +1,5 @@
 from config import Config
+from logger import Logger
 import numpy as np
 import json
 import requests
@@ -35,6 +36,7 @@ class GenericApi:
 
     def _send(self, msg: str):
         msg = f"{self._config.general['name']}: {msg}"
+        
         url = self._config.general['custom_message_hook']
         if not url:
             return
@@ -47,4 +49,7 @@ class GenericApi:
 
         data = json.loads(self._config.advanced_options['message_body_template'].format(msg=msg), strict=False)
 
-        requests.post(url, headers=headers, json=data)
+        try:
+            requests.post(url, headers=headers, json=data)
+        except BaseException as err:
+            Logger.error("Error sending generic message: " + err)

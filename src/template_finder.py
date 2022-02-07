@@ -202,6 +202,9 @@ class TemplateFinder:
                         Logger.debug(f"Could not find any of the above templates")
                     return template_match
 
+    def update_screen(self, screen: Screen):
+        self._screen = screen
+
 
 # Testing: Have whatever you want to find on the screen
 if __name__ == "__main__":

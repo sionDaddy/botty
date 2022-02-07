@@ -118,6 +118,7 @@ class GameController:
                 self.start_health_manager_thread()
                 self.start_death_manager_thread()
                 self.game_recovery = GameRecovery(self.screen, self.death_manager, self.template_finder)
+                self.template_finder.update_screen(self.screen)
                 return self.run_bot(True)
             Logger.error(f"{self._config.general['name']} could not restart the game. Quitting.")
             if self._config.general["custom_message_hook"]:

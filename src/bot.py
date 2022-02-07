@@ -345,7 +345,7 @@ class Bot:
             elif need_refill_teleport: Logger.info("Teleport charges ran out. Need to repair")
             else: Logger.info("Repairing and buying TPs at next Vendor")
             refill_tps = True
-            if self._tps_left > 6 and ( self._config.char["always_repair"] or self._config.char["every_game_repair"] ):
+            if self._tps_left > 6 and ( self._config.char["runs_per_repair"] or self._config.char["every_game_repair"] ):
                 refill_tps = False
             self._curr_loc = self._town_manager.repair_and_fill_tps(self._curr_loc, refill_tps)
             if not self._curr_loc:

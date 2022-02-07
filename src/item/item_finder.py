@@ -71,6 +71,9 @@ class ItemFinder:
                         template.blacklist = True
                     self._templates[item_name] = template
 
+    def update_items_to_pick(self, config: Config):
+        self._items_to_pick = config.items
+
     def search(self, inp_img: np.ndarray) -> list[Item]:
         img = inp_img[:,:,:]
         start = time.time()

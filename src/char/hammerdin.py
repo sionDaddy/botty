@@ -58,7 +58,7 @@ class Hammerdin(IChar):
         super().pre_move()
         # in case teleport hotkey is not set or teleport can not be used, use vigor if set
         should_cast_vigor = self._skill_hotkeys["vigor"] and not self._ui_manager.is_right_skill_selected(["VIGOR"])
-        can_teleport = self.capabilities.can_teleport_natively and self._ui_manager.is_right_skill_active() and not self._disable_teleport
+        can_teleport = self.capabilities.can_teleport_natively and self._ui_manager.is_right_skill_active()
         if should_cast_vigor and not can_teleport:
             keyboard.send(self._skill_hotkeys["vigor"])
             wait(0.15, 0.25)
@@ -70,9 +70,8 @@ class Hammerdin(IChar):
         self._cast_hammers(atk_len)
 
     def kill_pindle(self) -> bool:
-        self._disable_teleport = False
         wait(0.1, 0.15)
-        if self.capabilities.can_teleport_natively:
+        if self.capabilities.can_teleport_natively or ( self._char.capabilities.can_teleport_with_charges and self._config.char["teleport_type"] == 0 ):
             self._pather.traverse_nodes_fixed("pindle_end", self)
         else:
             if not self._do_pre_move:
@@ -85,7 +84,7 @@ class Hammerdin(IChar):
         return True
 
     def kill_eldritch(self) -> bool:
-        if self.capabilities.can_teleport_natively:
+        if self.capabilities.can_teleport_natively or ( self._char.capabilities.can_teleport_with_charges and self._config.char["teleport_type"] == 0 ):
             # Custom eld position for teleport that brings us closer to eld
             self._pather.traverse_nodes_fixed([(675, 30)], self)
         else:
@@ -100,11 +99,11 @@ class Hammerdin(IChar):
         return True
 
     def kill_shenk(self):
-        self._disable_teleport = False
         if not self._do_pre_move:
             keyboard.send(self._skill_hotkeys["concentration"])
             wait(0.05, 0.15)
-        self._pather.traverse_nodes((Location.A5_SHENK_SAFE_DIST, Location.A5_SHENK_END), self, time_out=1.0, do_pre_move=self._do_pre_move)
+        tp_charge = self._char.capabilities.can_teleport_with_charges and ( self._config.char["teleport_type"] == 0 or self._config.char["teleport_type"] == 1 )
+        self._pather.traverse_nodes((Location.A5_SHENK_SAFE_DIST, Location.A5_SHENK_END), self, time_out=1.0, do_pre_move=self._do_pre_move, use_tp_charge=tp_charge)
         wait(0.05, 0.1)
         self._cast_hammers(self._char_config["atk_len_shenk"])
         wait(0.1, 0.15)
@@ -112,7 +111,6 @@ class Hammerdin(IChar):
         return True
 
     def kill_council(self) -> bool:
-        self._disable_teleport = False
         if not self._do_pre_move:
             keyboard.send(self._skill_hotkeys["concentration"])
             wait(0.05, 0.15)

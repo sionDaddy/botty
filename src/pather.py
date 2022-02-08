@@ -449,12 +449,17 @@ class Pather:
     def _convert_rel_to_abs(rel_loc: Tuple[float, float], pos_abs: Tuple[float, float]) -> Tuple[float, float]:
         return (rel_loc[0] + pos_abs[0], rel_loc[1] + pos_abs[1])
 
-    def traverse_nodes_fixed(self, key: Union[str, List[Tuple[float, float]]], char: IChar) -> bool:
-        if not char.capabilities.can_teleport_natively:
+    def traverse_nodes_fixed(self, key: Union[str, List[Tuple[float, float]]], char: IChar, use_tp_charge: bool = False) -> bool:
+        if not char.capabilities.can_teleport_natively and not char.capabilities.can_teleport_with_charges:
             error_msg = "Teleport is required for static pathing"
             Logger.error(error_msg)
             raise ValueError(error_msg)
-        char.pre_move()
+        if use_tp_charge and char.select_tp():
+            # this means we want to use tele charge and we were able to select it
+            pass
+        else:
+            # we either want to tele charge but have no charges or don't wanna use the charge falling back to default pre_move handling
+            char.pre_move()
         if type(key) == str:
             path = self._config.path[key]
         else:

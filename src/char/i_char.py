@@ -31,10 +31,9 @@ class IChar:
         self._ocr = Ocr()
         # Add a bit to be on the save side
         self._cast_duration = self._char_config["casting_frames"] * 0.04 + 0.01
-        self._disable_teleport = False
 
     def _discover_capabilities(self) -> CharacterCapabilities:
-        if self._skill_hotkeys["teleport"] and not self._disable_teleport:
+        if self._skill_hotkeys["teleport"]:
             if self.select_tp():
                 if self.skill_is_charged():
                     return CharacterCapabilities(can_teleport_natively=False, can_teleport_with_charges=True)
@@ -179,7 +178,7 @@ class IChar:
 
     def move(self, pos_monitor: Tuple[float, float], force_tp: bool = False, force_move: bool = False):
         factor = self._config.advanced_options["pathing_delay_factor"]
-        if self._skill_hotkeys["teleport"] and (force_tp or (self._ui_manager.is_right_skill_selected(["TELE_ACTIVE"]) and self._ui_manager.is_right_skill_active())) and not self._disable_teleport:
+        if self._skill_hotkeys["teleport"] and (force_tp or (self._ui_manager.is_right_skill_selected(["TELE_ACTIVE"]) and self._ui_manager.is_right_skill_active())):
             mouse.move(pos_monitor[0], pos_monitor[1], randomize=3, delay_factor=[factor*0.1, factor*0.14])
             wait(0.012, 0.02)
             mouse.click(button="right")

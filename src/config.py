@@ -251,7 +251,7 @@ class Config:
             "kill_cs_trash": float(Config._select_val("char", "kill_cs_trash")),
             "runs_per_repair": False if not Config._select_val("char", "runs_per_repair") else int(Config._select_val("char", "runs_per_repair")),
             "gamble_items": False if not Config._select_val("char", "gamble_items") else Config._select_val("char", "gamble_items").replace(" ","").split(","),
-            "teleport_item": bool(int(Config._select_val("char", "teleport_item"))),
+            "teleport_type": int(Config._select_val("char", "teleport_type")),
             "skill_speed_bar": Config._select_val("char", "skill_speed_bar"),
             "check_teleport_key": bool(int(Config._select_val("char", "check_teleport_key"))),
             "every_game_repair": bool(int(Config._select_val("char", "every_game_repair"))),

@@ -747,9 +747,9 @@ class UiManager():
         wait(0.4, 0.45)
         tele_img = self._template_finder.search("TELE_INACTIVE", self._screen.grab())
         if tele_img.valid:
-            x, y = self._screen.convert_screen_to_monitor(tele_img.position)
+            x, y = self._screen.convert_screen_to_monitor(tele_img.center)
             Logger.debug(f"Found Teleport skill icon.")
-            mouse.move(x, y, randomize=[10, 10], delay_factor=[1.0, 1.8])
+            mouse.move(x, y, randomize=[5, 5], delay_factor=[1.0, 1.8])
             wait(0.2, 0.3)
             keyboard.send(teleport_key)
             wait(0.2, 0.3)

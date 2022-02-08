@@ -47,7 +47,7 @@ class Trav:
             return False
         if do_pre_buff:
             self._char.pre_buff()
-        if self._char.capabilities.can_teleport_natively or self._config.char["teleport_type"] == 0:
+        if self._char.capabilities.can_teleport_natively or ( self._char.capabilities.can_teleport_with_charges and self._config.char["teleport_type"] == 0 ):
             self._pather.traverse_nodes_fixed("trav_safe_dist", self._char, use_tp_charge=True)
         else:
             if not self._pather.traverse_nodes((Location.A3_TRAV_START, Location.A3_TRAV_CENTER_STAIRS), self._char, force_move=True):

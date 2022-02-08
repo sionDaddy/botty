@@ -71,8 +71,8 @@ class Hammerdin(IChar):
 
     def kill_pindle(self) -> bool:
         wait(0.1, 0.15)
-        if self.capabilities.can_teleport_natively or ( self._char.capabilities.can_teleport_with_charges and self._config.char["teleport_type"] == 0 ):
-            self._pather.traverse_nodes_fixed("pindle_end", self)
+        if self.capabilities.can_teleport_natively or ( self.capabilities.can_teleport_with_charges and self._char_config["teleport_type"] == 0 ):
+            self._pather.traverse_nodes_fixed("pindle_end", self, use_tp_charge=True)
         else:
             if not self._do_pre_move:
                 keyboard.send(self._skill_hotkeys["concentration"])
@@ -84,9 +84,9 @@ class Hammerdin(IChar):
         return True
 
     def kill_eldritch(self) -> bool:
-        if self.capabilities.can_teleport_natively or ( self._char.capabilities.can_teleport_with_charges and self._config.char["teleport_type"] == 0 ):
+        if self.capabilities.can_teleport_natively or ( self.capabilities.can_teleport_with_charges and self._char_config["teleport_type"] == 0 ):
             # Custom eld position for teleport that brings us closer to eld
-            self._pather.traverse_nodes_fixed([(675, 30)], self)
+            self._pather.traverse_nodes_fixed([(675, 30)], self, use_tp_charge=True)
         else:
             if not self._do_pre_move:
                 keyboard.send(self._skill_hotkeys["concentration"])
@@ -99,10 +99,11 @@ class Hammerdin(IChar):
         return True
 
     def kill_shenk(self):
-        if not self._do_pre_move:
-            keyboard.send(self._skill_hotkeys["concentration"])
-            wait(0.05, 0.15)
-        tp_charge = self._char.capabilities.can_teleport_with_charges and ( self._config.char["teleport_type"] == 0 or self._config.char["teleport_type"] == 1 )
+        if not self.capabilities.can_teleport_natively and not self.capabilities.can_teleport_with_charges:
+            if not self._do_pre_move:
+                keyboard.send(self._skill_hotkeys["concentration"])
+                wait(0.05, 0.15)
+        tp_charge = self.capabilities.can_teleport_with_charges and ( self._char_config["teleport_type"] == 0 or self._char_config["teleport_type"] == 1 )
         self._pather.traverse_nodes((Location.A5_SHENK_SAFE_DIST, Location.A5_SHENK_END), self, time_out=1.0, do_pre_move=self._do_pre_move, use_tp_charge=tp_charge)
         wait(0.05, 0.1)
         self._cast_hammers(self._char_config["atk_len_shenk"])

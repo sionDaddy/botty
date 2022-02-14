@@ -84,7 +84,7 @@ class GameController:
             time.sleep( self._config.general["break_time_duration"] * 60 )
         
             Logger.info(f"BreakTime is End!!! D2R Will be Start!!!")
-            messenger_breakTime.send_message(f"{self._config.general['name']}: BreakTime is End!!! D2R Will be Start!!!")
+            messenger_breakTime.send_message(f"BreakTime is End!!! D2R Will be Start!!!")
             run_d2r( self._config.general["d2r_path"] )
             time.sleep( 3 )
         
@@ -105,7 +105,7 @@ class GameController:
                 return
                 
             Logger.info(f"Botty Will be Start!!!")
-            messenger_breakTime.send_message(f"{self._config.general['name']}: Botty Will be Start!!!")
+            messenger_breakTime.send_message(f"Botty Will be Start!!!")
             # Reset flags before running a new bot
             self.death_manager.reset_death_flag()
             self.health_manager.reset_chicken_flag()
@@ -119,7 +119,7 @@ class GameController:
                 return self.run_bot(True)
             Logger.error(f"{self._config.general['name']} could not restart the game. Quitting.")
             if self._config.general["custom_message_hook"]:
-                messenger_breakTime.send_message(f"{self._config.general['name']}: got stuck and will now quit")
+                messenger_breakTime.send_message(f"got stuck and will now quit")
             os._exit(1)
         if do_restart:
             # Reset flags before running a new bot

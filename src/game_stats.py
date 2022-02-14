@@ -32,6 +32,7 @@ class GameStats:
         self._location_stats = {}
         self._location_stats["totals"] = { "items": 0, "deaths": 0, "chickens": 0, "merc_deaths": 0, "failed_runs": 0 }
         self._stats_filename = f'stats_{time.strftime("%Y%m%d_%H%M%S")}.log'
+        self._nopickup_active = False
         self._game_counter_breaktime = 0
         self._kill_count_pindle = 0
         self._kill_count_eld = 0
@@ -40,7 +41,7 @@ class GameStats:
         self._kill_count_nihlatak = 0
         self._kill_count_arc = 0
         self._kill_count_dia = 0
-        self._route_config = self._config.routes        
+        self._route_config = self._config.routes                
 
     def update_location(self, loc: str):
         if self._location != loc:

@@ -11,7 +11,7 @@ from config import Config
 def process_exists(process_name):
     call = 'TASKLIST', '/FI', 'imagename eq %s' % process_name
     # use buildin check_output right away
-    output = subprocess.check_output(call).decode()
+    output = subprocess.check_output(call).decode('euc-kr')
     # check in last line for process name
     last_line = output.strip().split('\r\n')[-1]
     # because Fail message could be translated

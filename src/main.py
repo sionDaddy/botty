@@ -24,6 +24,7 @@ def start_or_pause_bot(controllers: Controllers):
     if controllers.game.is_running:
         controllers.game.toggle_pause_bot()
     else:
+
         # Kill any other controllers and start botty
         controllers.debugger.stop()
         controllers.game.start()

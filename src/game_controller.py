@@ -80,6 +80,7 @@ class GameController:
             time.sleep(0.5)
         self.bot_thread.join()
         if self.bot._isBreakTime:
+            messenger_breakTime.send_message(f"It's BreakTime!!! ({self.bot._game_stats._game_counter_breaktime} runs)")
             close_down_d2()
             time.sleep( self._config.general["break_time_duration"] * 60 )
         

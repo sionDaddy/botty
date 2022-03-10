@@ -7,22 +7,16 @@ from messages.discord_embeds import DiscordEmbeds
 
 
 class Messenger:
-    def __init__(self, type = None):
-        self._config = Config()
-        if type is not None:
-            if type == "generic_api":
-                self._message_api = GenericApi()
-            elif type == "discord":
-                self._message_api = DiscordEmbeds()
-        elif self._config.general["message_api_type"] == "generic_api":
+    def __init__(self):
+        if Config().general["message_api_type"] == "generic_api":
             self._message_api = GenericApi()
-        elif self._config.general["message_api_type"] == "discord":
+        elif Config().general["message_api_type"] == "discord":
             self._message_api = DiscordEmbeds()
         else:
             self._message_api = None
 
-    def send_item(self, item: str, image:  np.ndarray, location: str):
-        self._message_api.send_item(item, image, location)
+    def send_item(self, item: str, image:  np.ndarray, location: str, ocr_text: str = None):
+        self._message_api.send_item(item, image, location, ocr_text)
 
     def send_death(self, location: str, image_path: str = None):
         self._message_api.send_death(location, image_path)

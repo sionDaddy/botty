@@ -40,7 +40,6 @@ class GameStats:
         self._kill_count_nihlatak = 0
         self._kill_count_arc = 0
         self._kill_count_dia = 0
-        self._route_config = self._config.routes                
 
     def update_location(self, loc: str):
         if self._location != loc:
@@ -111,22 +110,22 @@ class GameStats:
             self._consecutive_runs_failed = 0
             Logger.info(f"End game. Elapsed time: {elapsed_time:.2f}s")
             
-        if self._config.general["discord_run_count"]:
+        if Config().general["discord_run_count"]:
             data = f"runs={self._game_counter} [ "
             dataArray = []
-            if self._route_config["run_pindle"]:
+            if Config().routes["run_pindle"]:
                 dataArray.append( f"Pin={self._kill_count_pindle}" )
-            if self._route_config["run_eldritch"]:
+            if Config().routes["run_eldritch"]:
                 dataArray.append( f"Eld={self._kill_count_eld}" )
-            if self._route_config["run_shenk"]:
+            if Config().routes["run_shenk"]:
                 dataArray.append( f"Shk={self._kill_count_shenk}" )
-            if self._route_config["run_trav"]:
+            if Config().routes["run_trav"]:
                 dataArray.append( f"Trav={self._kill_count_triv}" )
-            if self._route_config["run_nihlathak"]:
+            if Config().routes["run_nihlathak"]:
                 dataArray.append( f"Nihl={self._kill_count_nihlatak}" )
-            if self._route_config["run_arcane"]:
+            if Config().routes["run_arcane"]:
                 dataArray.append( f"Arc={self._kill_count_arc}" )
-            if self._route_config["run_diablo"]:
+            if Config().routes["run_diablo"]:
                 dataArray.append( f"Dia={self._kill_count_dia}" )
             data += ', '.join( dataArray )
             data += " ]"

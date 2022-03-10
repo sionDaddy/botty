@@ -157,7 +157,7 @@ class PickIt:
                         picked_up_items.append(closest_item.name)
                 else:
                     char.pre_move()
-                    force_tp = ( char.capabilities.can_teleport_with_charges and self._char_config["teleport_type"] == 0 )
+                    force_tp = ( char.capabilities.can_teleport_with_charges and Config().char["teleport_type"] == 0 )
                     char.move((x_m, y_m), force_move=True, force_tp=force_tp)
                     if ( not char.capabilities.can_teleport_natively ) and ( not force_tp ):
                         time.sleep(0.3)

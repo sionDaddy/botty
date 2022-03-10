@@ -7,8 +7,13 @@ from messages.discord_embeds import DiscordEmbeds
 
 
 class Messenger:
-    def __init__(self):
-        if Config().general["message_api_type"] == "generic_api":
+    def __init__(self, api_type: str = None):
+        if api_type is not None:
+            if api_type == "generic_api":
+                self._message_api = GenericApi()
+            elif api_type == "discord":
+                self._message_api = DiscordEmbeds()    
+        elif Config().general["message_api_type"] == "generic_api":
             self._message_api = GenericApi()
         elif Config().general["message_api_type"] == "discord":
             self._message_api = DiscordEmbeds()

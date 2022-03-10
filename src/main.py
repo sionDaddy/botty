@@ -70,7 +70,7 @@ def main():
     print(f"============ Botty {__version__} [name: {Config().general['name']}] ============")
     print("\nFor gettings started and documentation\nplease read https://github.com/aeon0/botty\n")
 
-    if config.general['auto_run']:
+    if Config().general['auto_run']:
         print("Botty auto start : Botty will be run, after 2 seconds..")
         print("\n")
         time.sleep(2)

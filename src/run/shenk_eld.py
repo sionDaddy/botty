@@ -42,7 +42,7 @@ class ShenkEld:
             return False
         if do_pre_buff:
             self._char.pre_buff()
-        if self._char.capabilities.can_teleport_natively or ( self._char.capabilities.can_teleport_with_charges and self._config.char["teleport_type"] == 0 ):
+        if self._char.capabilities.can_teleport_natively or ( self._char.capabilities.can_teleport_with_charges and Config().char["teleport_type"] == 0 ):
             self._pather.traverse_nodes_fixed("eldritch_safe_dist", self._char, use_tp_charge=True)
         else:
             if not self._pather.traverse_nodes((Location.A5_ELDRITCH_START, Location.A5_ELDRITCH_SAFE_DIST), self._char, force_move=True):
@@ -59,13 +59,13 @@ class ShenkEld:
             game_stats.update_location("Shk" if Config().general['discord_status_condensed'] else "Shenk")
             self._curr_loc = Location.A5_SHENK_START
             # No force move, otherwise we might get stuck at stairs!
-            if self._config.char["teleport_type"] == 1:
+            if Config().char["teleport_type"] == 1:
                 if not self._pather.traverse_nodes((Location.A5_SHENK_START, Location.A5_SHENK_POTAL), self._char):
                     return False
                 if not self._pather.traverse_nodes((Location.A5_SHENK_POTAL, Location.A5_SHENK_SAFE_DIST), self._char, use_tp_charge=True):
                     return False
             else:
-                tp_charge = self._char.capabilities.can_teleport_with_charges and self._config.char["teleport_type"] == 0
+                tp_charge = self._char.capabilities.can_teleport_with_charges and Config().char["teleport_type"] == 0
                 if not self._pather.traverse_nodes((Location.A5_SHENK_START, Location.A5_SHENK_SAFE_DIST), self._char, use_tp_charge=tp_charge):
                     return False
             self._char.kill_shenk()

@@ -197,13 +197,13 @@ class Config:
             "loot_screenshots": bool(int(self._select_val("general", "loot_screenshots"))),
             "d2r_path": self._select_val("general", "d2r_path"),
             "restart_d2r_when_stuck": bool(int(self._select_val("general", "restart_d2r_when_stuck"))),
-            "auto_run": bool(int(Config._select_val("general", "auto_run"))),
-            "break_time_run": int(Config._select_val("general", "break_time_run")),
-            "break_time_run_random": int(Config._select_val("general", "break_time_run_random")),
-            "break_time_duration": int(Config._select_val("general", "break_time_duration")),
-            "pre_wait_time_min": int(Config._select_val("general", "pre_wait_time_min")),
-            "pre_wait_time_max": int(Config._select_val("general", "pre_wait_time_max")),
-            "discord_run_count": bool(int(Config._select_val("general", "discord_run_count"))),
+            "auto_run": bool(int(self._select_val("general", "auto_run"))),
+            "break_time_run": int(self._select_val("general", "break_time_run")),
+            "break_time_run_random": int(self._select_val("general", "break_time_run_random")),
+            "break_time_duration": int(self._select_val("general", "break_time_duration")),
+            "pre_wait_time_min": int(self._select_val("general", "pre_wait_time_min")),
+            "pre_wait_time_max": int(self._select_val("general", "pre_wait_time_max")),
+            "discord_run_count": bool(int(self._select_val("general", "discord_run_count"))),
         }
 
         # Added for dclone ip hunting
@@ -273,11 +273,11 @@ class Config:
             "runs_per_repair": False if not self._select_val("char", "runs_per_repair") else int(self._select_val("char", "runs_per_repair")),
             "gamble_items": False if not self._select_val("char", "gamble_items") else self._select_val("char", "gamble_items").replace(" ","").split(","),
             "sell_junk": bool(int(self._select_val("char", "sell_junk"))),
-            "teleport_type": int(Config._select_val("char", "teleport_type")),
-            "skill_speed_bar": Config._select_val("char", "skill_speed_bar"),
-            "check_teleport_key": bool(int(Config._select_val("char", "check_teleport_key"))),
-            "every_game_repair": bool(int(Config._select_val("char", "every_game_repair"))),
-            "always_stash_gold_first": bool(int(Config._select_val("char", "always_stash_gold_first"))),
+            "teleport_type": int(self._select_val("char", "teleport_type")),
+            "skill_speed_bar": self._select_val("char", "skill_speed_bar"),
+            "check_teleport_key": bool(int(self._select_val("char", "check_teleport_key"))),
+            "every_game_repair": bool(int(self._select_val("char", "every_game_repair"))),
+            "always_stash_gold_first": bool(int(self._select_val("char", "always_stash_gold_first"))),
         }
         # Sorc base config
         sorc_base_cfg = dict(self._config["sorceress"])

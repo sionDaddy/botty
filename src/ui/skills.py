@@ -5,7 +5,8 @@ import cv2
 import time
 import numpy as np
 from utils.misc import cut_roi, color_filter, wait
-from screen import grab
+from utils.custom_mouse import mouse
+from screen import grab, convert_screen_to_monitor
 from config import Config
 from template_finder import TemplateFinder
 from ui_manager import wait_for_screen_object, ScreenObjects
@@ -96,3 +97,20 @@ def get_skill_charges(ocr, img: np.ndarray = None):
         return int(ocr_result.text)
     except:
         return None
+
+def teleport_key_bind(teleport_key):
+        if select_tp(teleport_key):
+            return
+        keyboard.send(Config().char["skill_speed_bar"])
+        wait(0.4, 0.45)
+        tele_img = TemplateFinder().search("TELE_INACTIVE", grab())
+        if tele_img.valid:
+            x, y = convert_screen_to_monitor(tele_img.center)            
+            Logger.debug(f"Found Teleport skill icon.")
+            mouse.move(x, y, randomize=[5, 5], delay_factor=[1.0, 1.8])
+            wait(0.2, 0.3)
+            keyboard.send(teleport_key)
+            wait(0.2, 0.3)
+        
+        keyboard.send(Config().char["skill_speed_bar"])
+        wait(0.2, 0.3)

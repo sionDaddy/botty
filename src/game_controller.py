@@ -12,7 +12,7 @@ from game_stats import GameStats
 from health_manager import HealthManager
 from logger import Logger
 from messages import Messenger
-from screen import grab, get_offset_state
+from screen import grab, get_offset_state, start_detecting_window
 from utils.restart import restart_game, kill_game
 from utils.misc import kill_thread, set_d2r_always_on_top, restore_d2r_window_visibility
 from utils.misc import run_d2r, close_down_d2
@@ -48,7 +48,7 @@ class GameController:
             self.health_manager.update_location(self.bot.get_curr_location())
             max_game_length_reached = self.game_stats.get_current_game_length() > Config().general["max_game_length_s"]
             max_consecutive_fails_reached = False if not Config().general["max_consecutive_fails"] else self.game_stats.get_consecutive_runs_failed() >= Config().general["max_consecutive_fails"]
-            if max_game_length_reached or max_consecutive_fails_reached or self.death_manager.died() or self.health_manager.did_chicken():
+            if max_game_length_reached or max_consecutive_fails_reached or self.death_manager.died() or self.health_manager.did_chicken() or self.bot._isBreakTime:
                 # Some debug and logging
                 if self.bot._isBreakTime:
                     Logger.info(f"Now Botty is BreakTime!!!")
@@ -77,11 +77,11 @@ class GameController:
         if self.bot._isBreakTime:
             messenger_breakTime.send_message(f"It's BreakTime!!! ({self.bot._game_stats._game_counter_breaktime} runs)")
             close_down_d2()
-            time.sleep( self._config.general["break_time_duration"] * 60 )
+            time.sleep( Config().general["break_time_duration"] * 60 )
         
             Logger.info(f"BreakTime is End!!! D2R Will be Start!!!")
             messenger_breakTime.send_message(f"BreakTime is End!!! D2R Will be Start!!!")
-            run_d2r( self._config.general["d2r_path"] )
+            run_d2r( Config().general["d2r_path"] )
             time.sleep( 3 )
         
             Logger.info(f"Waiting D2R Logo screen...")
@@ -98,25 +98,13 @@ class GameController:
             if res == False:
                 Logger.info(f"Cannot find D2R Screen!! plese Check 'd2r_path' config file")
                 os._exit(1)
-                return
-                
+                return            
+            
             Logger.info(f"Botty Will be Start!!!")
             messenger_breakTime.send_message(f"Botty Will be Start!!!")
-            # Reset flags before running a new bot
-            self.death_manager.reset_death_flag()
-            self.health_manager.reset_chicken_flag()
-            self.game_stats.reset_game()
-            
-            if self.setup_screen():
-                self.start_health_manager_thread()
-                self.start_death_manager_thread()
-                self.game_recovery = GameRecovery(self.screen, self.death_manager, self.template_finder)
-                self.template_finder.update_screen(self.screen)
-                return self.run_bot(True)
-            Logger.error(f"{self._config.general['name']} could not restart the game. Quitting.")
-            if self._config.general["custom_message_hook"]:
-                messenger_breakTime.send_message(f"got stuck and will now quit")
-            os._exit(1)
+            start_detecting_window()
+            self.game_stats.reset_game()            
+            return self.run_bot()
         if do_restart:
             # Reset flags before running a new bot
             self.death_manager.reset_death_flag()

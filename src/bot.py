@@ -29,7 +29,7 @@ from char.basic import Basic
 from char.basic_ranged import Basic_Ranged
 from ui_manager import wait_for_screen_object, detect_screen_object, ScreenObjects
 from ui import meters, skills, view, character_select, main_menu
-from inventory import personal, vendor, belt, common, consumables
+from inventory import personal, vendor, belt, common, consumables, stash
 
 from run import Pindle, ShenkEld, Trav, Nihlathak, Arcane, Diablo
 from town import TownManager, A1, A2, A3, A4, A5, town_manager
@@ -117,7 +117,7 @@ class Bot:
         self._ran_no_pickup = False
         self._previous_run_failed = False
         self._isBreakTime = False
-        self._break_time_runs = self._config.general["break_time_run"] + random.randint(0, self._config.general["break_time_run_random"])
+        self._break_time_runs = Config().general["break_time_run"] + random.randint(0, Config().general["break_time_run_random"])
         self._checked_teleport_key = False
         self._need_repair = False        
 
@@ -230,7 +230,7 @@ class Bot:
             view.move_to_corpse()
         else: return
         self._checked_teleport_key = False
-        if self._config.char["every_game_repair"]:
+        if Config().char["every_game_repair"]:
             self._need_repair = True
         self.trigger_or_stop("start_from_town")
 
@@ -257,6 +257,10 @@ class Bot:
                 Logger.info("Activated /nopickup")
             else:
                 Logger.error("Failed to detect if /nopickup command was applied or not")
+
+        if Config().char["always_stash_gold_first"]:
+            stash.curr_stash["gold"] = 0
+            
         self.trigger_or_stop("maintenance")
 
     def on_maintenance(self):
@@ -270,9 +274,9 @@ class Bot:
             belt.fill_up_belt_from_inventory(Config().char["num_loot_columns"])
             wait(0.5)
 
-        if self._config.general["pre_wait_time_min"] > 0 or self._config.general["pre_wait_time_max"] > 0:
-            Logger.info(f"{self._config.general['name']} is wait some seconds..")
-            wait(self._config.general["pre_wait_time_min"], self._config.general["pre_wait_time_max"])
+        if Config().general["pre_wait_time_min"] > 0 or Config().general["pre_wait_time_max"] > 0:
+            Logger.info(f"{Config().general['name']} is wait some seconds..")
+            wait(Config().general["pre_wait_time_min"], Config().general["pre_wait_time_max"])
 
         self._char.discover_capabilities()
         if self._pick_corpse and self._char.capabilities.can_teleport_with_charges and not self._char.select_tp():
@@ -384,9 +388,9 @@ class Bot:
                 return self.trigger_or_stop("end_game", failed=True)
 
         # check teleport key bind
-        if not self._checked_teleport_key and self._config.char["check_teleport_key"]:
+        if not self._checked_teleport_key and Config().char["check_teleport_key"]:
             self._checked_teleport_key = True
-            self._ui_manager.teleport_key_bind(self._char._skill_hotkeys["teleport"])
+            skills.teleport_key_bind(self._char._skill_hotkeys["teleport"])
 
         # Gamble if needed
         while vendor.get_gamble_status() and Config().char["gamble_items"]:

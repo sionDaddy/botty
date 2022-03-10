@@ -87,7 +87,7 @@ class Barbarian(IChar):
 
     def kill_pindle(self) -> bool:
         wait(0.1, 0.15)
-        if self.capabilities.can_teleport_natively or ( self.capabilities.can_teleport_with_charges and self._char_config["teleport_type"] == 0 ):
+        if self.capabilities.can_teleport_natively or ( self.capabilities.can_teleport_with_charges and Config().char["teleport_type"] == 0 ):
             self._pather.traverse_nodes_fixed("pindle_end", self, use_tp_charge=True)
         else:
             if not self._do_pre_move:
@@ -101,7 +101,7 @@ class Barbarian(IChar):
         return True
 
     def kill_eldritch(self) -> bool:
-        if self.capabilities.can_teleport_natively or ( self.capabilities.can_teleport_with_charges and self._char_config["teleport_type"] == 0 ):
+        if self.capabilities.can_teleport_natively or ( self.capabilities.can_teleport_with_charges and Config().char["teleport_type"] == 0 ):
             self._pather.traverse_nodes_fixed("eldritch_end", self, use_tp_charge=True)
         else:
             self._pather.traverse_nodes((Location.A5_ELDRITCH_SAFE_DIST, Location.A5_ELDRITCH_END), self, time_out=1.0, do_pre_move=self._do_pre_move)
@@ -112,7 +112,7 @@ class Barbarian(IChar):
         return True
 
     def kill_shenk(self):
-        tp_charge = self.capabilities.can_teleport_with_charges and ( self._char_config["teleport_type"] == 0 or self._char_config["teleport_type"] == 1 )
+        tp_charge = self.capabilities.can_teleport_with_charges and ( Config().char["teleport_type"] == 0 or Config().char["teleport_type"] == 1 )
         self._pather.traverse_nodes((Location.A5_SHENK_SAFE_DIST, Location.A5_SHENK_END), self, time_out=1.0, do_pre_move=self._do_pre_move, use_tp_charge=tp_charge)
         wait(0.05, 0.1)
         self._cast_war_cry(Config().char["atk_len_shenk"])

@@ -1,9 +1,8 @@
 import time
-from inventory import belt
 import keyboard
 import cv2
 from operator import itemgetter
-from ui_manager import ScreenObjects, detect_screen_object
+from ui_manager import ScreenObjects, is_visible
 from utils.custom_mouse import mouse
 from config import Config
 from logger import Logger
@@ -11,6 +10,7 @@ from screen import grab, convert_abs_to_monitor, convert_screen_to_monitor
 from item import ItemFinder, Item
 from char import IChar
 from inventory import consumables
+import parse
 
 
 class PickIt:
@@ -18,11 +18,10 @@ class PickIt:
         self._item_finder = item_finder
         self._last_closest_item: Item = None
 
-    def pick_up_items(self, char: IChar, is_at_trav: bool = False) -> bool:
+    def pick_up_items(self, char: IChar) -> bool:
         """
         Pick up all items with specified char
         :param char: The character used to pick up the item
-        :param is_at_trav: Dirty hack to reduce gold pickup only to trav area, should be removed once we can determine the amount of gold reliably
         :return: Bool if any items were picked up or not. (Does not account for picking up scrolls and pots)
         """
         found_nothing = 0
@@ -35,7 +34,7 @@ class PickIt:
             cv2.imwrite("./loot_screenshots/info_debug_drop_" + time.strftime("%Y%m%d_%H%M%S") + ".png", img)
             Logger.debug("Took a screenshot of current loot")
         start = prev_cast_start = time.time()
-        time_out = False
+        timeout = False
         picked_up_items = []
         skip_items = []
         curr_item_to_pick: Item = None
@@ -43,9 +42,9 @@ class PickIt:
         did_force_move = False
         done_ocr=False
 
-        while not time_out:
+        while not timeout:
             if (time.time() - start) > 28:
-                time_out = True
+                timeout = True
                 Logger.warning("Got stuck during pickit, skipping it this time...")
                 break
             img = grab()
@@ -83,9 +82,16 @@ class PickIt:
             if needs["key"] <= 0:
                 item_list = [x for x in item_list if "misc_key" != x.name]
 
-            # TODO: Hacky solution for trav only gold pickup, hope we can soon read gold ammount and filter by that...
-            if Config().char["gold_trav_only"] and not is_at_trav:
-                item_list = [x for x in item_list if "misc_gold" not in x.name]
+            # filter out gold less than desired quantity
+            if (min_gold := Config().char['min_gold_to_pick']):
+                for item in item_list[:]:
+                    if "misc_gold" == item.name:
+                        try:
+                            ocr_gold = int(parse.search("{:d} GOLD", item.ocr_result.text).fixed[0])
+                        except:
+                            ocr_gold = 0
+                        if ocr_gold < min_gold:
+                            item_list.remove(item)
 
             if len(item_list) == 0:
                 # if twice no item was found, break
@@ -145,9 +151,9 @@ class PickIt:
                     if not char.capabilities.can_teleport_natively:
                         time.sleep(0.2)
 
-                    if detect_screen_object(ScreenObjects.Overburdened).valid:
+                    if is_visible(ScreenObjects.Overburdened):
                         found_items = True
-                        Logger.warning("Inventory full, skipping pickit!")
+                        Logger.warning("Inventory full, terminating pickit!")
                         # TODO: Could think about sth like: Go back to town, stash, come back picking up stuff
                         break
                     else:

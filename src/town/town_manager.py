@@ -43,12 +43,12 @@ class TownManager:
             location = Location.A1_TOWN_START
         return location
 
-    def wait_for_town_spawn(self, time_out: float = None) -> Location:
+    def wait_for_town_spawn(self, timeout: float = None) -> Location:
         """Wait for the char to spawn in town after starting a new game
-        :param time_out: Optional float value for time out in seconds, defaults to None
-        :return: Location of the town (e.g. Location.A4_TOWN_START) or None if nothing was found within time_out time
+        :param timeout: Optional float value for time out in seconds, defaults to None
+        :return: Location of the town (e.g. Location.A4_TOWN_START) or None if nothing was found within timeout time
         """
-        template_match = TemplateFinder().search_and_wait(TOWN_MARKERS, best_match=True, time_out=time_out)
+        template_match = TemplateFinder().search_and_wait(TOWN_MARKERS, best_match=True, timeout=timeout)
         if template_match.valid:
             return TownManager.get_act_from_location(template_match.name)
         return None
@@ -97,7 +97,8 @@ class TownManager:
         # check if we can buy pots in current act
         if self._acts[curr_act].can_buy_pots():
             new_loc = self._acts[curr_act].open_trade_menu(curr_loc)
-            if not new_loc: return False, items
+            if not (new_loc and common.wait_for_left_inventory()): return False, items
+            common.select_tab(3)
             img=grab()
             # Buy HP pots
             if consumables.get_needs("health") > 0:

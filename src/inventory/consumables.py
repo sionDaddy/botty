@@ -1,15 +1,13 @@
 from config import Config
 import cv2
 import numpy as np
-import keyboard
 import time
 import parse
 from utils.custom_mouse import mouse
 from template_finder import TemplateFinder
-from ui_manager import detect_screen_object, ScreenObjects
-from inventory import personal, common
+from inventory import personal
 from utils.misc import wait
-from screen import grab, convert_screen_to_monitor
+from screen import grab
 from dataclasses import dataclass
 from logger import Logger
 from item import ItemCropper
@@ -136,11 +134,14 @@ def update_tome_key_needs(img: np.ndarray = None, item_type: str = "tp") -> bool
     # get the item description box
     item_box = ItemCropper().crop_item_descr(hovered_item, model="engd2r_inv_th_fast")
     if item_box.valid:
-        result = parse.search("Quantity: {:d}", item_box.ocr_result.text).fixed[0]
-        if item_type.lower() in ["tp", "id"]:
-            set_needs(item_type, 20 - result)
-        if item_type.lower() == "key":
-            set_needs(item_type, 12 - result)
+        try:
+            result = parse.search("Quantity: {:d}", item_box.ocr_result.text).fixed[0]
+            if item_type.lower() in ["tp", "id"]:
+                set_needs(item_type, 20 - result)
+            if item_type.lower() == "key":
+                set_needs(item_type, 12 - result)
+        except Exception as e:
+            Logger.error(f"update_tome_key_needs: unable to parse quantity for {item_type}. Exception: {e}")
     else:
         Logger.error(f"update_tome_key_needs: Failed to capture item description box for {item_type}")
         if Config().general["info_screenshots"]:

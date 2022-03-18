@@ -106,13 +106,13 @@ class LightSorc(Sorceress):
         self.move(pos_m, force_move=True)
         # Move to items
         wait(self._cast_duration, self._cast_duration + 0.2)
-        self._pather.traverse_nodes((Location.A5_SHENK_SAFE_DIST, Location.A5_SHENK_END), self, time_out=1.4, force_tp=True)
+        self._pather.traverse_nodes((Location.A5_SHENK_SAFE_DIST, Location.A5_SHENK_END), self, timeout=1.4, force_tp=True)
         return True
         
     def kill_shenk_type1(self):
         # Logger.info("Start Shenk Type 1")
 		
-        pos = [ int(self._skill_hotkeys["shenk_type2_x"]), int(self._skill_hotkeys["shenk_type2_y"]) ];
+        pos = [ int(self._skill_hotkeys["shenk_type2_x"]), int(self._skill_hotkeys["shenk_type2_y"]) ]
         x_m, y_m = self._screen.convert_screen_to_monitor(pos)
         x_m += int(random.random() * 6 - 3)
         y_m += int(random.random() * 6 - 3)
@@ -139,7 +139,7 @@ class LightSorc(Sorceress):
         # Move inside to the right
         self._pather.traverse_nodes_fixed([(1110, 120)], self)
         self._pather.offset_node(300, (80, -110))
-        self._pather.traverse_nodes([300], self, time_out=1.0, force_tp=True)
+        self._pather.traverse_nodes([300], self, timeout=1.0, force_tp=True)
         self._pather.offset_node(300, (-80, 110))
         wait(0.5)
         self._frozen_orb((-150, -10), spray=10)
@@ -155,7 +155,7 @@ class LightSorc(Sorceress):
         self.move(pos_m, force_move=True)
         wait(0.5)
         self._pather.offset_node(226, (-80, 60))
-        self._pather.traverse_nodes([226], self, time_out=1.0, force_tp=True)
+        self._pather.traverse_nodes([226], self, timeout=1.0, force_tp=True)
         self._pather.offset_node(226, (80, -60))
         wait(0.5)
         self._frozen_orb((-150, -130), spray=10)
@@ -163,7 +163,7 @@ class LightSorc(Sorceress):
         self._chain_lightning((-170, -150), spray=20)
         wait(0.5)
         self._pather.traverse_nodes_fixed([(1110, 15)], self)
-        self._pather.traverse_nodes([300], self, time_out=1.0, force_tp=True)
+        self._pather.traverse_nodes([300], self, timeout=1.0, force_tp=True)
         pos_m = convert_abs_to_monitor((300, 150))
         self.pre_move()
         self.move(pos_m, force_move=True)
@@ -178,7 +178,7 @@ class LightSorc(Sorceress):
         self.pre_move()
         self.move(pos_m, force_move=True)
         self._pather.offset_node(304, (0, -80))
-        self._pather.traverse_nodes([304], self, time_out=1.0, force_tp=True)
+        self._pather.traverse_nodes([304], self, timeout=1.0, force_tp=True)
         self._pather.offset_node(304, (0, 80))
         wait(0.5)
         self._frozen_orb((175, -170), spray=40)
@@ -213,7 +213,7 @@ class LightSorc(Sorceress):
         self.pre_move()
         self.move(pos_m, force_move=True)
         # Move outside since the trav.py expects to start searching for items there if char can teleport
-        self._pather.traverse_nodes([226], self, time_out=2.5, force_tp=True)
+        self._pather.traverse_nodes([226], self, timeout=2.5, force_tp=True)
         return True
 
     def kill_nihlathak(self, end_nodes: list[int]) -> bool:
@@ -249,7 +249,7 @@ class LightSorc(Sorceress):
 
         # Move to items
         wait(self._cast_duration, self._cast_duration + 0.2)
-        self._pather.traverse_nodes(end_nodes, self, time_out=0.8)
+        self._pather.traverse_nodes(end_nodes, self, timeout=0.8)
         return True
 
     def kill_summoner(self) -> bool:

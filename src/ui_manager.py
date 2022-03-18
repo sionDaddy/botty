@@ -2,6 +2,7 @@ import keyboard
 import os
 import numpy as np
 import time
+from typing import Union, TypeVar, Callable
 from utils.custom_mouse import mouse
 from utils.misc import wait
 from logger import Logger
@@ -14,6 +15,7 @@ from game_stats import GameStats
 
 messenger = Messenger()
 game_stats = GameStats()
+T = TypeVar('T')
 
 @dataclass
 class ScreenObject:
@@ -21,12 +23,13 @@ class ScreenObject:
     ref: list[str]
     inp_img: np.ndarray = None
     roi: list[float] = None
-    time_out: float = 30
+    timeout: float = 30
     threshold: float = 0.68
-    normalize_monitor: bool = False
+    normalize_monitor: bool = True
     best_match: bool = False
     use_grayscale: bool = False
     color_match: list[np.array] = None
+    suppress_debug: bool = False
 
     def __call__(self, cls):
         cls._screen_object = self
@@ -110,12 +113,14 @@ class ScreenObjects:
     OnlineStatus=ScreenObject(
         ref=["CHARACTER_STATE_ONLINE", "CHARACTER_STATE_OFFLINE"],
         roi="character_online_status",
-        best_match=True
+        best_match=True,
+        normalize_monitor=False
     )
     SelectedCharacter=ScreenObject(
         ref=["CHARACTER_ACTIVE"],
         roi="character_select",
-        threshold=0.8
+        threshold=0.8,
+        normalize_monitor=False
     )
     ServerError=ScreenObject(
         ref=["SERVER_ISSUES"]
@@ -142,35 +147,29 @@ class ScreenObjects:
     TownPortal=ScreenObject(
         ref="BLUE_PORTAL",
         threshold=0.8,
-        roi="tp_search",
-        normalize_monitor=True
+        roi="tp_search"
     )
     TownPortalReduced=ScreenObject(
         ref="BLUE_PORTAL",
         threshold=0.8,
-        roi="reduce_to_center",
-        normalize_monitor=True
+        roi="reduce_to_center"
     )
     GoldBtnInventory=ScreenObject(
         ref="INVENTORY_GOLD_BTN",
-        roi="gold_btn",
-        normalize_monitor=True
+        roi="gold_btn"
     )
     GoldBtnStash=ScreenObject(
         ref="INVENTORY_GOLD_BTN",
-        roi="gold_btn_stash",
-        normalize_monitor=True
+        roi="gold_btn_stash"
     )
     GoldBtnVendor=ScreenObject(
         ref="VENDOR_GOLD",
-        roi="gold_btn_stash",
-        normalize_monitor=True
+        roi="gold_btn_stash"
     )
     GoldNone=ScreenObject(
         ref="INVENTORY_NO_GOLD",
         roi="inventory_gold",
-        threshold=0.83,
-        use_grayscale=True
+        threshold=0.83
     )
     TownPortalSkill=ScreenObject(
         ref=["TP_ACTIVE", "TP_INACTIVE"],
@@ -181,7 +180,6 @@ class ScreenObjects:
     RepairBtn=ScreenObject(
         ref="REPAIR_BTN",
         roi="repair_btn",
-        normalize_monitor=True,
         use_grayscale=True
     )
     YouHaveDied=ScreenObject(
@@ -224,7 +222,7 @@ class ScreenObjects:
         use_grayscale=True
     )
     RightPanel=ScreenObject(
-        ref="CLOSE_PANEL",
+        ref=["CLOSE_PANEL", "CLOSE_PANEL_2"],
         roi="right_panel_header",
         threshold=0.8,
         use_grayscale=True
@@ -248,8 +246,7 @@ class ScreenObjects:
     )
     Key=ScreenObject(
         ref="INV_KEY",
-        threshold=0.8,
-        normalize_monitor=True
+        threshold=0.8
     )
     EmptyStashSlot=ScreenObject(
         ref="STASH_EMPTY_SLOT",
@@ -268,42 +265,58 @@ class ScreenObjects:
         use_grayscale=True,
         roi="quest_skill_btn"
     )
+    TabIndicator=ScreenObject(
+        ref="TAB_INDICATOR",
+        roi="tab_indicator",
+        normalize_monitor=False
+    )
+    DepositBtn=ScreenObject(
+        ref=["DEPOSIT_BTN", "DEPOSIT_BTN_BRIGHT"],
+        threshold=0.8,
+        roi="deposit_btn",
+    )
 
 def detect_screen_object(screen_object: ScreenObject, img: np.ndarray = None) -> TemplateMatch:
     roi = Config().ui_roi[screen_object.roi] if screen_object.roi else None
     img = grab() if img is None else img
-    match = TemplateFinder().search(
+    return TemplateFinder().search(
         ref = screen_object.ref,
         inp_img = img,
         threshold = screen_object.threshold,
         roi = roi,
         best_match = screen_object.best_match,
         use_grayscale = screen_object.use_grayscale,
-        normalize_monitor = screen_object.normalize_monitor)
-    if match.valid:
-        return match
-    return match
+        normalize_monitor = screen_object.normalize_monitor
+        )
 
-def select_screen_object_match(match: TemplateMatch, delay_factor: tuple[float, float] = (0.9, 1.1)) -> None:
-    mouse.move(*convert_screen_to_monitor(match.center), delay_factor=delay_factor)
+def select_screen_object_match(match: TemplateMatch, delay_factor: tuple[float, float] = (0.9, 1.1), normalize_monitor: bool = False) -> None:
+    pos = match.center if not normalize_monitor else convert_screen_to_monitor(match.center)
+    mouse.move(*pos, delay_factor=delay_factor)
     wait(0.05, 0.09)
     mouse.click("left")
     wait(0.05, 0.09)
 
-def wait_for_screen_object(screen_object: ScreenObject, time_out: int = None) -> TemplateMatch:
-    roi = Config().ui_roi[screen_object.roi] if screen_object.roi else None
-    time_out = time_out if time_out else 30
-    match = TemplateFinder().search_and_wait(
-        ref = screen_object.ref,
-        time_out = time_out,
-        threshold = screen_object.threshold,
-        roi = roi,
-        best_match = screen_object.best_match,
-        use_grayscale = screen_object.use_grayscale,
-        normalize_monitor = screen_object.normalize_monitor)
-    if match.valid:
-        return match
+def is_visible(screen_object: ScreenObject, img: np.ndarray = None) -> bool:
+    return detect_screen_object(screen_object, img).valid
+
+def wait_until_visible(screen_object: ScreenObject, timeout: float = 30) -> TemplateMatch:
+    if not (match := wait_until(lambda: detect_screen_object(screen_object), lambda match: match.valid, timeout)[0]).valid:
+        Logger.debug(f"{screen_object.ref} not found after {timeout} seconds")
     return match
+
+def wait_until_hidden(screen_object: ScreenObject, timeout: float = 3) -> bool:
+    if not (hidden := wait_until(lambda: detect_screen_object(screen_object).valid, lambda res: not res, timeout)[1]):
+        Logger.debug(f"{screen_object.ref} still found after {timeout} seconds")
+    return hidden
+
+def wait_until(func: Callable[[], T], is_success: Callable[[T], bool], timeout = None) -> Union[T, None]:
+    start = time.time()
+    while (time.time() - start) < timeout:
+        res = func()
+        if (success := is_success(res)):
+            break
+        wait(0.05)
+    return res, success
 
 def hover_over_screen_object_match(match) -> None:
     mouse.move(*convert_screen_to_monitor(match.center))
@@ -313,8 +326,7 @@ def list_visible_objects(img: np.ndarray = None) -> list:
     img = grab() if img is None else img
     visible=[]
     for pair in [a for a in vars(ScreenObjects).items() if not a[0].startswith('__') and a[1] is not None]:
-        if (match := detect_screen_object(pair[1], img)).valid:
-            # visible.append(match)
+        if is_visible(pair[1], img):
             visible.append(pair[0])
     return visible
 

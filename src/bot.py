@@ -33,6 +33,7 @@ from inventory import personal, vendor, belt, common, consumables, stash
 
 from run import Pindle, ShenkEld, Trav, Nihlathak, Arcane, Diablo
 from town import TownManager, A1, A2, A3, A4, A5, town_manager
+from utils.misc import wait
 
 # Added for dclone ip hunt
 from messages import Messenger

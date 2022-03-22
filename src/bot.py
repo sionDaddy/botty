@@ -257,7 +257,7 @@ class Bot:
                 Logger.error("Failed to detect if /nopickup command was applied or not")
 
         if Config().char["always_stash_gold_first"]:
-            stash.curr_stash["gold"] = 0
+            stash.set_curr_stash(gold = 0)
             
         self.trigger_or_stop("maintenance")
 

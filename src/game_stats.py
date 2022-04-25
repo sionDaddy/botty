@@ -120,19 +120,17 @@ class GameStats:
         if Config().general["discord_run_count"]:
             data = f"runs={self._game_counter} [ "
             dataArray = []
-            if Config().routes["run_pindle"]:
+            if Config().routes.get("run_pindle"):
                 dataArray.append( f"Pin={self._kill_count_pindle}" )
-            if Config().routes["run_eldritch"]:
-                dataArray.append( f"Eld={self._kill_count_eld}" )
-            if Config().routes["run_shenk"]:
-                dataArray.append( f"Shk={self._kill_count_shenk}" )
-            if Config().routes["run_trav"]:
+            if Config().routes.get("run_eldritch") or Config().routes.get("run_eldritch_shenk"):
+                dataArray.append( f"Shenk={self._kill_count_eld}" )
+            if Config().routes.get("run_trav"):
                 dataArray.append( f"Trav={self._kill_count_triv}" )
-            if Config().routes["run_nihlathak"]:
+            if Config().routes.get("run_nihlathak"):
                 dataArray.append( f"Nihl={self._kill_count_nihlatak}" )
-            if Config().routes["run_arcane"]:
+            if Config().routes.get("run_arcane"):
                 dataArray.append( f"Arc={self._kill_count_arc}" )
-            if Config().routes["run_diablo"]:
+            if Config().routes.get("run_diablo"):
                 dataArray.append( f"Dia={self._kill_count_dia}" )
             data += ', '.join( dataArray )
             data += " ]"

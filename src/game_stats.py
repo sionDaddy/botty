@@ -122,7 +122,7 @@ class GameStats:
             dataArray = []
             if Config().routes.get("run_pindle"):
                 dataArray.append( f"Pin={self._kill_count_pindle}" )
-            if Config().routes.get("run_eldritch"):
+            if Config().routes.get("run_eldritch") or Config().routes.get("run_eldritch_shenk"):
                 dataArray.append( f"Eld={self._kill_count_eld}" )
             if Config().routes.get("run_eldritch_shenk"):
                 dataArray.append( f"Shenk={self._kill_count_shenk}" )

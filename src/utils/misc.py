@@ -28,6 +28,9 @@ from collections import OrderedDict
 def close_down_d2():
     subprocess.call(["taskkill","/F","/IM","D2R.exe"], stderr=subprocess.DEVNULL)
 
+def close_down_bnet_launcher():
+    subprocess.call(["taskkill","/F","/IM","Battle.net.exe"], stderr=subprocess.DEVNULL)
+
 @dataclass
 class WindowSpec:
     title_regex: 'Union[str, None]' = None
@@ -257,6 +260,13 @@ def run_d2r(path: str):
         win32api.WinExec(path + " -mod botty -txt")  # seamless 동작
     except:
        pass
+       
+def image_is_equal(img1: np.ndarray, img2: np.ndarray) -> bool:
+    shape_equal = img1.shape == img2.shape
+    if not shape_equal:
+        Logger.debug("image_is_equal: Image shape is not equal")
+        return False
+    return not(np.bitwise_xor(img1, img2).any())
 
 # if __name__ == "__main__":
     # print(find_d2r_window())

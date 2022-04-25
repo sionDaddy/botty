@@ -37,8 +37,8 @@ class ShenkEld:
 
     def battle(self, do_shenk: bool, do_pre_buff: bool, game_stats) -> Union[bool, tuple[Location, bool]]:
         # Eldritch
-        game_stats.update_location("Eld" if Config().general['discord_status_condensed'] else "Eldritch")
-        if not TemplateFinder().search_and_wait(["ELDRITCH_0", "ELDRITCH_START"], threshold=0.65, timeout=20).valid:
+        game_stats.update_location("Eld")
+        if not TemplateFinder().search_and_wait(["ELDRITCH_0", "ELDRITCH_0_V2", "ELDRITCH_0_V3", "ELDRITCH_START", "ELDRITCH_START_V2"], threshold=0.65, timeout=20).valid:
             return False
         if do_pre_buff:
             self._char.pre_buff()
@@ -56,7 +56,7 @@ class ShenkEld:
         # Shenk
         if do_shenk:
             Logger.info("Run Shenk")
-            game_stats.update_location("Shk" if Config().general['discord_status_condensed'] else "Shenk")
+            game_stats.update_location("Shk")
             self._curr_loc = Location.A5_SHENK_START
             # No force move, otherwise we might get stuck at stairs!
             if Config().char["teleport_type"] == 1:

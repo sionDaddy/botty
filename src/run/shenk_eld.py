@@ -65,7 +65,7 @@ class ShenkEld:
                 if not self._pather.traverse_nodes((Location.A5_SHENK_POTAL, Location.A5_SHENK_SAFE_DIST), self._char, use_tp_charge=True):
                     return False
             else:
-                tp_charge = self._char.capabilities.can_teleport_with_charges and Config().char["teleport_type"] == 0
+                tp_charge = self._char.capabilities.can_teleport_with_charges
                 if not self._pather.traverse_nodes((Location.A5_SHENK_START, Location.A5_SHENK_SAFE_DIST), self._char, use_tp_charge=tp_charge):
                     return False
             self._char.kill_shenk()

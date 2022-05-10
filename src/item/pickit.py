@@ -162,8 +162,11 @@ class PickIt:
                             Logger.info(f"Picking up: {closest_item.name} ({closest_item.score*100:.1f}% confidence)")
                         picked_up_items.append(closest_item.name)
                 else:
-                    char.pre_move()
-                    force_tp = ( char.capabilities.can_teleport_with_charges and Config().char["teleport_type"] == 0 )
+                    force_tp = char.capabilities.can_teleport_natively or char.capabilities.can_teleport_with_charges
+                    if force_tp and char.select_tp():
+                        pass
+                    else:
+                        char.pre_move()                    
                     char.move((x_m, y_m), force_move=True, force_tp=force_tp)
                     if ( not char.capabilities.can_teleport_natively ) and ( not force_tp ):
                         time.sleep(0.3)

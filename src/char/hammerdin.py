@@ -67,15 +67,18 @@ class Hammerdin(IChar):
             keyboard.send(self._skill_hotkeys["vigor"])
             wait(0.15, 0.25)
 
-    def _move_and_attack(self, abs_move: tuple[int, int], atk_len: float):
+    def _move_and_attack(self, abs_move: tuple[int, int], atk_len: float, use_tp_charge: bool=False):
         pos_m = convert_abs_to_monitor(abs_move)
-        self.pre_move()
+        if use_tp_charge and self.select_tp():
+            pass
+        else:
+            self.pre_move()
         self.move(pos_m, force_move=True)
         self._cast_hammers(atk_len)
 
     def kill_pindle(self) -> bool:
         wait(0.1, 0.15)
-        if self.capabilities.can_teleport_natively or ( self.capabilities.can_teleport_with_charges and Config().char["teleport_type"] == 0 ):
+        if self.capabilities.can_teleport_natively or self.capabilities.can_teleport_with_charges:
             self._pather.traverse_nodes_fixed("pindle_end", self, use_tp_charge=True)
         else:
             if not self._do_pre_move:
@@ -117,6 +120,8 @@ class Hammerdin(IChar):
         if not self._do_pre_move:
             keyboard.send(self._skill_hotkeys["concentration"])
             wait(0.05, 0.15)
+
+        use_tp_charge2 = self.capabilities.can_teleport_natively or self.capabilities.can_teleport_with_charges
         # Check out the node screenshot in assets/templates/trav/nodes to see where each node is at
         atk_len = Config().char["atk_len_trav"]
         # Go inside and hammer a bit

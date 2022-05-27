@@ -26,8 +26,9 @@ class RestartManager():
             res = cv2.matchTemplate(img, template, cv2.TM_CCOEFF_NORMED)
             _, max_val, _, max_pos = cv2.minMaxLoc(res)
             if max_val > 0.8:
-                Logger.info(f"Found D2R Logo. now touch screen")
+                Logger.info(f"Found D2R Logo. now touch screen : [{max_pos[0]}, {max_pos[1]}]")
                 mouse.move(max_pos[0] + 50, max_pos[1] + 10, randomize=10, delay_factor=[2.0, 3.0])
+                time.sleep(0.5)
                 mouse.click(button="left")
                 time.sleep(1)
                 return True

@@ -17,8 +17,8 @@ from ui_manager import detect_screen_object, ScreenObjects
 class RestartManager():
 
     def wait_d2_intro(self) -> bool:
-        template = load_template(f"assets/templates/d2_intro_logo.png", 1.0)
-        template_logo = load_template(f"assets/templates/ui/main_menu/main_menu_top_left.png", 1.0)
+        template = load_template(f"assets/templates/d2_intro_logo.png")
+        template_logo = load_template(f"assets/templates/ui/main_menu/main_menu_top_left.png")
         start = time.time()
         debug_max_val = 0
         while time.time() - start < 5:
